@@ -1,7 +1,15 @@
 import requests
 from bs4 import BeautifulSoup
 
-url = "https://www.prodrivers.com/jobs/?City=Denver&State=Colorado"
+city = input("Enter the city: ")
+state = input("Enter the state: ")
+
+# Format the user input into proper URL parameters
+city_param = f"City={city}"
+state_param = f"State={state}"
+
+# Construct the URL with the updated parameters
+url = f"https://www.prodrivers.com/jobs/?{city_param}&{state_param}"
 
 # Send a GET request to the URL
 response = requests.get(url)
