@@ -8,6 +8,8 @@ from datetime import datetime
 from flask_bcrypt import Bcrypt
 from flask_sqlalchemy import SQLAlchemy
 
+from markupsafe import escape #fixes jinja2 escape error
+
 bcrypt = Bcrypt()
 db = SQLAlchemy()
 

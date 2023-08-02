@@ -3,6 +3,7 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField
 from wtforms.validators import DataRequired
 from flask_sqlalchemy import SQLAlchemy
+from markupsafe import escape, Markup #fixes jinja2 escape error
 
 from models import db, Driver, Client, Dispatcher, Company, Manager, HiddenJob
 from forms import LoginForm

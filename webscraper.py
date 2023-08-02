@@ -1,5 +1,6 @@
 import requests
 from bs4 import BeautifulSoup
+from markupsafe import escape #fixes jinja2 escape error
 
 city = input("Enter the city: ")
 state = input("Enter the state: ")

@@ -1,6 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 import json
+from markupsafe import escape #fixes jinja2 escape error
 
 def scrape_job_data(city, state, keyword):
     url = f"https://www.prodrivers.com/jobs/?_city={city}&_state={state}&_title={keyword}"
