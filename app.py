@@ -38,6 +38,7 @@ from flask import request
 # Route for home page (job board)
 @app.route('/')
 def home():
+    form = LoginForm()
     return render_template('index.html', form=form)
 
 
