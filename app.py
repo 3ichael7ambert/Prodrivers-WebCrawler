@@ -1,9 +1,10 @@
-from flask import Flask, render_template, redirect, url_for
+from flask import Flask, render_template, redirect, url_for#, request
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField
 from wtforms.validators import DataRequired
 from flask_sqlalchemy import SQLAlchemy
-from MarkupSafe import escape, Markup  # fixes jinja2 escape error
+from markupsafe import escape # fixes jinja2 escape error
+import requests 
 
 from models import db, Driver, Client, Dispatcher, Company, Manager, HiddenJob
 from forms import LoginForm
@@ -12,14 +13,44 @@ from webcrawl import scrape_job_data
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'SeKRuT'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///driver_jobs_db'
 db = SQLAlchemy(app)
 
+
+##Random City Method
+# Make a request to the Random User Generator API
+response = requests.get('https://randomuser.me/api/?nat=us')
+# Parse the response to get the state and city information
+data = response.json()
+random_state = data['results'][0]['location']['state']
+random_city = data['results'][0]['location']['city']
+
+# Construct the URL with the random state and city
+city_param = random_city
+state_param = random_state
+url = f"https://www.prodrivers.com/jobs/?{city_param}&{state_param}"
+
+job_data = scrape_job_data(f"https://www.prodrivers.com/jobs/?{city_param}&{state_param}") 
+
+from flask import request
+
 # Route for home page (job board)
 @app.route('/')
+def home():
+    return render_template('index.html', form=form)
+
+
+@app.route('/job_board')
 def job_board():
-    job_data = scrape_job_data()  # Use the web crawling function to get job data
-    return render_template('job_board.html', job_data=job_data)
+    url = request.args.get('url')  # Get the 'url' query parameter from the URL
+    if url:
+        job_data = scrape_job_data()  # Use the web crawling function to get job data
+        return render_template('job_board.html', job_data=job_data)
+    else:
+        # Handle the case when 'url' parameter is not provided
+        return
+    
 
 # Route for login page
 @app.route('/login', methods=['GET', 'POST'])

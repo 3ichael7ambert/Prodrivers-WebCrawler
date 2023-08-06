@@ -1,14 +1,11 @@
 import requests
 from bs4 import BeautifulSoup
 import json
-from markupsafe import escape #fixes jinja2 escape error
 
-def scrape_job_data(city, state, keyword):
-    url = f"https://www.prodrivers.com/jobs/?_city={city}&_state={state}&_title={keyword}"
+def scrape_job_data(url):
     headers = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3'
     }
-
     response = requests.get(url, headers=headers)
     if response.status_code == 200:
         soup = BeautifulSoup(response.content, 'html.parser')
@@ -37,10 +34,8 @@ def scrape_job_data(city, state, keyword):
         return None
 
 if __name__ == "__main__":
-    city = "denver"
-    state = "co"
-    keyword = "driver"
-    job_data = scrape_job_data(city, state, keyword)
+    url = "https://www.prodrivers.com/jobs/?_city=denver&_state=co&_title=driver"
+    job_data = scrape_job_data(url)
 
     if job_data:
         json_output = json.dumps(job_data, indent=2)
