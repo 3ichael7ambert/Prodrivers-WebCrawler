@@ -121,5 +121,29 @@ def edit_job(job_id):
 
     return render_template('edit_job.html', job=job)
 
+
+
+
+
+
+
+@app.route('/about')
+def about():
+    form = LoginForm()
+    return render_template('about.html', form=form)
+
+@app.route('/services')
+def services():
+    form = LoginForm()
+    return render_template('services.html', form=form)
+
+@app.route('/contact')
+def contact():
+    form = LoginForm()
+    return render_template('contact.html', form=form)
+
+
+
+
 if __name__ == '__main__':
     app.run(debug=True)

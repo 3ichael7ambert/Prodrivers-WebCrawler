@@ -11,6 +11,12 @@
                     <h2>{{ job.Title }}</h2>
                     <p><strong>Location:</strong> {{ job.Location }}</p>
                     <p><strong>Base Pay:</strong> {{ job["Base Pay"] }}</p>
+                    <p><strong>Duties:</strong></p>
+                    <ul>
+                        {% for duty in job.Duties %}
+                            <li>{{ duty }}</li>
+                        {% endfor %}
+                    </ul>
                     <!-- Additional jobs-->
                     <a href="{{ url_for('apply_for_job', job_id=job.id) }}">Apply Now</a>
                 </li>
