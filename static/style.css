@@ -4,13 +4,49 @@
 }  
 @media (min-width:481px) and (max-width:767px) {
   
+    header {
+        width: 70%; /* Adjust the width as needed */
+        float: left;
+    }
+    
+    .collapse-button {
+        display: block;
+    }
+    
+    nav {
+        width: 30%; /* Adjust the width as needed */
+        float: left;
+    }
+    
+    /* Style the collapse button */
+    .navbar-toggler {
+        display: none; /* Hide the button on tablets */
+    }
 }
+
+
 @media (min-width:768px) and (max-width:991px) {
   
 }
 @media (min-width:992px) and (max-width:1199px) {
   
-}
+        /* Side-by-side layout of header and nav */
+        header {
+            width: 50%; /* Adjust the width as needed */
+            float: left;
+        }
+        
+        .collapse-button {
+            display: none; /* Hide the button on desktops */
+        }
+        
+        nav {
+            width: 50%; /* Adjust the width as needed */
+            float: left;
+        }
+    }
+
+
 @media (min-width:1200px) and (max-width:1919px) {
   
 }

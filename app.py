@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, url_for#, request
+from flask import Flask, render_template, redirect, url_for, request
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField
 from wtforms.validators import DataRequired
@@ -6,10 +6,14 @@ from flask_sqlalchemy import SQLAlchemy
 from markupsafe import escape # fixes jinja2 escape error
 import requests 
 
-from models import db, Driver, Client, Dispatcher, Company, Manager, HiddenJob
+from models import db, Driver, Client, Dispatcher, Company, Manager, HiddenJob, User
 from forms import LoginForm
 
 from webcrawl import scrape_job_data
+
+from werkzeug.utils import secure_filename
+
+from flask_login import LoginManager, UserMixin, login_user, current_user, login_required, logout_user
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'SeKRuT'
@@ -33,14 +37,25 @@ url = f"https://www.prodrivers.com/jobs/?{city_param}&{state_param}"
 
 job_data = scrape_job_data(f"https://www.prodrivers.com/jobs/?{city_param}&{state_param}") 
 
-from flask import request
+
+# Create a LoginManager instance
+login_manager = LoginManager(app)
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
+
+
 
 # Route for home page (job board)
 @app.route('/')
-def home():
+def main():
     form = LoginForm()
     return render_template('index.html', form=form)
 
+@app.route('/home')
+def home():
+    return render_template('index.html', form=form, current_user=current_user)
 
 @app.route('/job_board')
 def job_board():
@@ -59,18 +74,57 @@ def login():
     form = LoginForm()
     if form.validate_on_submit():
         # Check login credentials and authenticate user
-        # Replace this with your authentication logic using the form data
-        username = form.username.data
-        password = form.password.data
-        # Perform authentication and redirect to the appropriate dashboard based on user role
-
-        # Example: If the user is a driver, redirect to driver_dashboard
-        return redirect(url_for('driver_dashboard', username=username))
+        user = User.query.filter_by(username=form.username.data).first()
+        if user and user.check_password(form.password.data):
+            login_user(user)  # Log in the user
+            # Redirect to the appropriate dashboard based on user role
+            user_type = get_user_type(user.username)
+            if user_type == 'driver':
+                return redirect(url_for('driver_dashboard', username=user.username))
+            elif user_type == 'client':
+                return redirect(url_for('client_dashboard', username=user.username))
+            elif user_type == 'dispatcher':
+                return redirect(url_for('dispatcher_dashboard', username=user.username))
+            elif user_type == 'manager':
+                return redirect(url_for('manager_dashboard', username=user.username))
+            else:
+                flash('Unknown user role', 'danger')
+                return redirect(url_for('home'))
+        else:
+            flash('Invalid username or password', 'danger')
 
     return render_template('login.html', form=form)
 
+
+# Route for logging out
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    return redirect(url_for('home'))
+
+
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        user_role = request.form['user_role'] 
+
+        new_user = User(username=username, password=password, role=user_role)
+        db.session.add(new_user)
+        db.session.commit()
+
+        # Redirect to the appropriate page after registration
+        return redirect(url_for('login'))  
+
+    return render_template('register.html') 
+
+
+
 # Route for driver dashboard
 @app.route('/driver_dashboard/<username>')
+@login_required
 def driver_dashboard(username):
     # Retrieve driver information based on username and display the dashboard
     driver = Driver.query.filter_by(username=username).first()
@@ -78,6 +132,7 @@ def driver_dashboard(username):
 
 # Route for dispatcher dashboard
 @app.route('/dispatch_dashboard/<username>')
+@login_required
 def dispatch_dashboard(username):
     # Retrieve dispatcher information based on username and display the dashboard
     dispatcher = Dispatcher.query.filter_by(username=username).first()
@@ -85,17 +140,26 @@ def dispatch_dashboard(username):
 
 # Route for client dashboard
 @app.route('/client_dashboard/<username>')
+@login_required
 def client_dashboard(username):
     # Retrieve client information based on username and display the dashboard
     client = Client.query.filter_by(username=username).first()
     return render_template('client_dashboard.html', client=client)
+
+# Route for manager dashboard
+@app.route('/manager_dashboard/<username>')
+@login_required
+def manager_dashboard(username):
+    # Retrieve client information based on username and display the dashboard
+    manager = Manager.query.filter_by(username=username).first()
+    return render_template('manager_dashboard.html', client=client)
+
 
 # Route for posting a new job
 @app.route('/post_job', methods=['GET', 'POST'])
 def post_job():
     if request.method == 'POST':
         # Process the form data and save the new job to the database
-        # Replace this with your logic to handle the job posting form
         job_title = request.form['job_title']
         job_description = request.form['job_description']
         # Save the job to the database using SQLAlchemy
@@ -111,7 +175,6 @@ def edit_job(job_id):
     job = HiddenJob.query.get(job_id)
     if request.method == 'POST':
         # Process the form data and update the job in the database
-        # Replace this with your logic to handle the job editing form
         job_title = request.form['job_title']
         job_description = request.form['job_description']
         # Update the job in the database using SQLAlchemy
@@ -144,6 +207,7 @@ def contact():
 
 
 
-
 if __name__ == '__main__':
+    with app.app_context():
+        db.create_all()
     app.run(debug=True)

@@ -5,13 +5,38 @@ from datetime import datetime
 from flask_bcrypt import Bcrypt
 from flask_sqlalchemy import SQLAlchemy
 
+
+from sqlalchemy import Enum
+from enum import Enum as PyEnum
+
+#from flask_login import UserMixin
+
 bcrypt = Bcrypt()
 db = SQLAlchemy()
 
 #ROLES
 
-class Driver(db.Model):
+
+
+#class User(UserMixin):
+#    pass
+class UserRole(Enum):
+    DRIVER = 'driver'
+    DISPATCHER = 'dispatcher'
+    CLIENT = 'client'
+    MANAGER = 'manager'
+
+class User(db.Model):
     id = db.Column(db.String, primary_key=True)
+    firstName = db.Column(db.String)
+    lastName = db.Column(db.String)
+    username = db.Column(db.String)
+    password = db.Column(db.String)
+    rrole = db.Column(db.String, nullable=True, default=None)
+
+
+class Driver(db.Model):
+    id = db.Column(db.String, db.ForeignKey('user.id'), primary_key=True)
     firstName = db.Column(db.String)
     lastName = db.Column(db.String)
     username = db.Column(db.String)
@@ -38,7 +63,7 @@ class Job(db.Model):
     client = db.relationship('Client', back_populates='jobs')
 
 class Client(db.Model):
-    id = db.Column(db.String, primary_key=True)
+    id = db.Column(db.String, db.ForeignKey('user.id'), primary_key=True)
     otherJobDetails = db.Column(db.String)
     username = db.Column(db.String)
     password = db.Column(db.String)
@@ -48,7 +73,7 @@ class Client(db.Model):
     jobs = db.relationship('Job', back_populates='client')
 
 class Dispatcher(db.Model): #admin
-    id = db.Column(db.String, primary_key=True)
+    id = db.Column(db.String, db.ForeignKey('user.id'), primary_key=True)
     firstName = db.Column(db.String)
     lastName = db.Column(db.String)
     username = db.Column(db.String)
@@ -59,7 +84,7 @@ class Company(db.Model):
     companyName = db.Column(db.String)
 
 class Manager(db.Model):
-    id = db.Column(db.String, primary_key=True)
+    id = db.Column(db.String, db.ForeignKey('user.id'), primary_key=True)
     firstName = db.Column(db.String)
     lastName = db.Column(db.String)
     username = db.Column(db.String)

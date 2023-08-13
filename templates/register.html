@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block title %}Register{% endblock %}
+
+{% block content %}
+  <h2>Register</h2>
+  <form method="POST" action="{{ url_for('register') }}">
+    <div class="form-group">
+      <label for="username">Username</label>
+      <input type="text" name="username" class="form-control" required>
+    </div>
+    <div class="form-group">
+      <label for="password">Password</label>
+      <input type="password" name="password" class="form-control" required>
+    </div>
+    <div class="form-group">
+      <label for="user_role">User Role</label>
+      <select name="user_role" class="form-control" required>
+        <option value="{{ UserRole.DRIVER.value }}">Driver</option>
+        <option value="{{ UserRole.DISPATCHER.value }}">Dispatcher</option>
+        <option value="{{ UserRole.CLIENT.value }}">Client</option>
+        <option value="{{ UserRole.MANAGER.value }}">Manager</option>
+      </select>
+    </div>
+    <button type="submit" class="btn btn-primary">Register</button>
+  </form>
+{% endblock %}
