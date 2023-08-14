@@ -37,7 +37,6 @@ url = f"https://www.prodrivers.com/jobs/?{city_param}&{state_param}"
 
 job_data = scrape_job_data(f"https://www.prodrivers.com/jobs/?{city_param}&{state_param}") 
 
-
 # Create a LoginManager instance
 login_manager = LoginManager(app)
 
@@ -65,7 +64,7 @@ def job_board():
         return render_template('job_board.html', job_data=job_data)
     else:
         # Handle the case when 'url' parameter is not provided
-        return
+        return render_template('job_board.html') 
     
 
 # Route for login page
