@@ -1,6 +1,6 @@
 from flask import Flask, render_template, redirect, url_for, request
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, BooleanField
+from wtforms import StringField, PasswordField, BooleanField, SelectField
 from wtforms.validators import DataRequired
 from flask_sqlalchemy import SQLAlchemy
 from markupsafe import escape # fixes jinja2 escape error
@@ -54,6 +54,7 @@ def main():
 
 @app.route('/home')
 def home():
+    form = LoginForm()
     return render_template('index.html', form=form, current_user=current_user)
 
 @app.route('/job_board')
