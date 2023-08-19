@@ -34,20 +34,20 @@
                     <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('job_board') }}">Job Board</a>
                     </li>
-                    <li class="nav-item">
+                    <li class="nav-item" id="login-link">
                         <a class="nav-link" href="{{ url_for('login') }}">Login</a>
                     </li>
                     {% if current_user.is_authenticated %}
                         {% if current_user.role == 'driver' %}
-                            <li class="nav-item">
+                            <li class="nav-item" id="dashboard-link" style="display: none;">
                                 <a class="nav-link" href="{{ url_for('driver_dashboard', username=current_user.username) }}">Driver Dashboard</a>
                             </li>
                         {% elif current_user.role == 'client' %}
-                            <li class="nav-item">
+                            <li class="nav-item" id="dashboard-link" style="display: none;">
                                 <a class="nav-link" href="{{ url_for('client_dashboard', username=current_user.username) }}">Client Dashboard</a>
                             </li>
                         {% elif current_user.role == 'dispatcher' %}
-                            <li class="nav-item">
+                            <li class="nav-item" id="dashboard-link" style="display: none;">
                                 <a class="nav-link" href="{{ url_for('dispatcher_dashboard', username=current_user.username) }}">Dispatcher Dashboard</a>
                             </li>
                         {% endif %}

@@ -4,22 +4,28 @@
 
 {% block content %}
     <h1>Job Board</h1>
+
+        <!-- Job Search Form -->
+        <form action="{{ url_for('job_board') }}" method="get">
+            {{ job_search_form.csrf_token }}
+            
+            <label for="city">City:</label>
+            <input type="text" id="city" name="city" value="{{ request.args.get('city', '') }}">
     
+            <label for="state">State:</label>
+            <input type="text" id="state" name="state" value="{{ request.args.get('state', '') }}">
+            
+            <label for="keyword">Keyword:</label>
+            <!-- <input type="text" id="keyword" name="keyword" value="{{ request.args.get('keyword', '') }}"> -->
+            {{ job_search_form.keyword(class="form-control") }}
+            <button type="submit">Search</button>
+        </form>
+
     {% if job_data %}
         <ul>
             {% for job in job_data %}
                 <li>
-                    <h2>{{ job.Title }}</h2>
-                    <p><strong>Location:</strong> {{ job.Location }}</p>
-                    <p><strong>Base Pay:</strong> {{ job["Base Pay"] }}</p>
-                    <p><strong>Duties:</strong></p>
-                    <ul>
-                        {% for duty in job.Duties %}
-                            <li>{{ duty }}</li>
-                        {% endfor %}
-                    </ul>
-                    <!-- Additional jobs-->
-                    <a href="{{ url_for('apply_for_job', job_id=job.id) }}">Apply Now</a>
+                    <!-- Job details... -->
                 </li>
             {% endfor %}
         </ul>

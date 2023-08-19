@@ -9,9 +9,12 @@ class LoginForm(FlaskForm):
     remember_me = BooleanField('Remember Me')
 
 class JobSearchForm(FlaskForm):
-    location = StringField('Location')
-    job_type = SelectField('Job Type', choices=[('full_time', 'Full Time'), ('part_time', 'Part Time')])
-    salary_range = SelectField('Salary Range', choices=[('any', 'Any'), ('low', 'Low'), ('medium', 'Medium'), ('high', 'High')])
+    city = StringField('City')
+    state = StringField('State')
+    # keyword = StringField('Keyword')
+    # location = StringField('Location')
+    keyword = SelectField('Job Type', choices=[('Class A', 'Class B'), ('Non CDL', 'Any')])
+    # salary_range = SelectField('Salary Range', choices=[('any', 'Any'), ('low', 'Low'), ('medium', 'Medium'), ('high', 'High')])
 
 class JobPostForm(FlaskForm):
     job_title = StringField('Job Title', validators=[DataRequired()])

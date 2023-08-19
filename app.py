@@ -7,7 +7,7 @@ from markupsafe import escape # fixes jinja2 escape error
 import requests 
 
 from models import db, Driver, Client, Dispatcher, Company, Manager, HiddenJob, User
-from forms import LoginForm
+from forms import LoginForm, JobSearchForm, JobPostForm, JobEditForm, UserProfileForm
 
 from webcrawl import scrape_job_data
 
@@ -29,13 +29,14 @@ response = requests.get('https://randomuser.me/api/?nat=us')
 data = response.json()
 random_state = data['results'][0]['location']['state']
 random_city = data['results'][0]['location']['city']
+key_param = ''
 
 # Construct the URL with the random state and city
 city_param = random_city
 state_param = random_state
-url = f"https://www.prodrivers.com/jobs/?{city_param}&{state_param}"
+url = f"https://www.prodrivers.com/jobs/?_city={city_param}&_state={state_param}&_title={key_param}"
 
-job_data = scrape_job_data(f"https://www.prodrivers.com/jobs/?{city_param}&{state_param}") 
+job_data = scrape_job_data(f"https://www.prodrivers.com/jobs/?_city={city_param}&_state={state_param}&_title={key_param}") 
 
 # Create a LoginManager instance
 login_manager = LoginManager(app)
@@ -44,6 +45,20 @@ login_manager = LoginManager(app)
 def load_user(user_id):
     return User.query.get(int(user_id))
 
+
+
+def get_job_data(url):
+    response = requests.get(url)
+    if response.status_code == 200:
+        soup = BeautifulSoup(response.content, 'html.parser')
+        # Parse the job data from the soup object
+        # Replace this with your actual scraping logic
+        job_data = []
+        # ...
+        return job_data
+    else:
+        return []
+    
 
 
 # Route for home page (job board)
@@ -55,18 +70,39 @@ def main():
 @app.route('/home')
 def home():
     form = LoginForm()
-    return render_template('index.html', form=form, current_user=current_user)
+    if url:
+        job_data = scrape_job_data(url)  # Pass the URL to the scrape_job_data function
+        return render_template('index.html', form=form, current_user=current_user)
+    else:
+        return render_template('index.html', form=form, current_user=current_user)
 
 @app.route('/job_board')
 def job_board():
+    job_search_form = JobSearchForm()
     url = request.args.get('url')  # Get the 'url' query parameter from the URL
     if url:
-        job_data = scrape_job_data()  # Use the web crawling function to get job data
-        return render_template('job_board.html', job_data=job_data)
+        flash("Searching jobs with parameters: city={}, state={}, keyword={}".format(request.args.get('city', ''), request.args.get('state', ''), request.args.get('keyword', '')))
+        job_data = scrape_job_data(url)  # Pass the URL to the scrape_job_data function
+        return render_template('job_board.html', job_search_form=job_search_form, job_data=job_data)
     else:
         # Handle the case when 'url' parameter is not provided
-        return render_template('job_board.html') 
-    
+        return render_template('job_board.html', job_search_form=job_search_form)
+
+
+def job_search():
+    job_search_form = JobSearchForm(request.args)
+
+    if job_search_form.validate():
+        city_param = job_search_form.city.data
+        state_param = job_search_form.state.data
+        key_param = job_search_form.keyword.data
+
+        url = f"https://www.prodrivers.com/jobs/?_city={city_param}&_state={state_param}&_title={key_param}"
+        job_data = get_job_data(url)
+
+        return render_template('job_board.html', job_search_form=job_search_form, job_data=job_data)
+    else:
+        return render_template('job_board.html', job_search_form=job_search_form)
 
 # Route for login page
 @app.route('/login', methods=['GET', 'POST'])
