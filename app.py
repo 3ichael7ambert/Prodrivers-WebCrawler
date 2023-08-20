@@ -7,7 +7,7 @@ from markupsafe import escape # fixes jinja2 escape error
 import requests , random
 
 from models import db, Driver, Client, Dispatcher, Company, Manager, HiddenJob, User
-from forms import LoginForm, JobSearchForm, JobPostForm, JobEditForm, UserProfileForm
+from forms import LoginForm, RegisterForm, JobSearchForm, JobPostForm, JobEditForm, UserProfileForm
 
 from webcrawl import scrape_job_data
 
@@ -233,7 +233,8 @@ def logout():
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
-    if request.method == 'POST':
+    form = RegisterForm() 
+    if form.validate_on_submit():
         username = request.form['username']
         password = request.form['password']
         user_role = request.form['user_role'] 
@@ -242,10 +243,13 @@ def register():
         db.session.add(new_user)
         db.session.commit()
 
-        # Redirect to the appropriate page after registration
-        return redirect(url_for('login'))  
+        flash('Registration successful!', 'success')
+        return redirect(url_for('login'))
 
-    return render_template('register.html') 
+    return render_template('register.html', form=form) 
+
+
+
 
 
 

@@ -1,39 +1,22 @@
 {% extends "base.html" %}
 
-{% block title %}Login or Register{% endblock %}
+{% block title %}Login{% endblock %}
 
 {% block content %}
-    <h1>Login or Register</h1>
-    <div id="login-form">
-        <h2>Login</h2>
-        <form action="{{ url_for('login') }}" method="post">
-            <!-- Login form fields -->
-            <label for="username">Username:</label>
-            <input type="text" id="username" name="username" required>
-    
-            <label for="password">Password:</label>
-            <input type="password" id="password" name="password" required>
-    
-            <button type="submit">Login</button>
-        </form>
-    </div>
+    <h1>Login</h1>
+    <form action="{{ url_for('login') }}" method="post">
+        {{ form.hidden_tag() }}
+        {{ form.username.label }} {{ form.username(size=20) }}
+        {{ form.password.label }} {{ form.password(size=20) }}
+        {{ form.remember_me }} {{ form.remember_me.label }}
+        <button type="submit">Login</button>
+    </form>
 
-    <div id="register-form" style="display: none;">
-        <h2>Register</h2>
-        <form action="{{ url_for('register') }}" method="post">
-            <!-- Register form fields -->
-            <label for="username">Username:</label>
-            <input type="text" id="username" name="username" required>
+    <button id="switch-form">Switch to Register</button>
 
-            <label for="email">Email:</label>
-            <input type="email" id="email" name="email" required>
-    
-            <label for="password">Password:</label>
-            <input type="password" id="password" name="password" required>
-    
-            <button type="submit">Register</button>
-        </form>
-    </div>
-
-    <button id="toggle-form">Switch to {% if login %}Register{% else %}Login{% endif %}</button>
-    {% endblock %}
+    <script>
+        document.getElementById("switch-form").addEventListener("click", function () {
+            window.location.href = "{{ url_for('register') }}";
+        });
+    </script>
+{% endblock %}

@@ -16,24 +16,19 @@
 
 
     // LOGIN REGISTER
-    document.addEventListener('DOMContentLoaded', function () {
-        const loginForm = document.getElementById('login-form');
-        const registerForm = document.getElementById('register-form');
-        const toggleButton = document.getElementById('toggle-form');
-        
-        let login = {% if login %}true{% else %}false{% endif %};
-    
-        toggleButton.addEventListener('click', function () {
-            login = !login;
-            
-            if (login) {
-                loginForm.style.display = 'block';
-                registerForm.style.display = 'none';
-                toggleButton.textContent = 'Switch to Register';
-            } else {
-                loginForm.style.display = 'none';
-                registerForm.style.display = 'block';
-                toggleButton.textContent = 'Switch to Login';
-            }
-        });
-    });
+    // document.addEventListener("DOMContentLoaded", function () {
+    //     const loginForm = document.getElementById("login-form");
+    //     const registerForm = document.getElementById("register-form");
+    //     const toggleButton = document.getElementById("toggle-form");
+
+    //     toggleButton.addEventListener("click", function () {
+    //         loginForm.style.display = loginForm.style.display === "none" ? "block" : "none";
+    //         registerForm.style.display = registerForm.style.display === "none" ? "block" : "none";
+
+    //         if (loginForm.style.display === "none") {
+    //             toggleButton.textContent = "Switch to Register";
+    //         } else {
+    //             toggleButton.textContent = "Switch to Login";
+    //         }
+    //     });
+    // });

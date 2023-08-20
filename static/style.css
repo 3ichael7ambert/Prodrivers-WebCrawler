@@ -25,6 +25,7 @@
     }
     
     .navbar-nav {
+        display: none; /* Hide the nav items */
         flex-direction: column;
         align-items: center;
     }
@@ -40,22 +41,26 @@
     }
     
     nav {
-        width: 30%;
-        float: left;
-        padding: 10px;
+        width: 100%;
+        text-align: center;
     }
     
     .navbar-toggler {
-        display: none;
+        display: block;
+        background-color: transparent;
+        border: none;
     }
     
     .collapse-button {
-        display: none;
+        display: block;
+        text-align: center;
+        margin-top: 10px;
     }
     
     .navbar-nav {
-        flex-direction: row;
-        justify-content: center;
+        display: none; /* Hide the nav items */
+        flex-direction: column;
+        align-items: center;
     }
     
 }
@@ -64,25 +69,32 @@
 @media (min-width:768px) and (max-width:991px) {
     
     header {
-        width: 60%;
-        float: left;
-        padding: 20px;
+        width: 100%;
+        text-align: center;
+        margin-bottom: 10px;
     }
     
     nav {
-        width: 40%;
-        float: left;
-        padding: 20px;
+        width: 100%;
+        text-align: center;
+    }
+    
+    .navbar-toggler {
+        display: block;
+        background-color: transparent;
+        border: none;
     }
     
     .collapse-button {
-        display: none;
+        display: block;
+        text-align: center;
+        margin-top: 10px;
     }
     
-    /* Adjustments for the content area */
-    .content {
-        width: 100%;
-        padding: 20px;
+    .navbar-nav {
+        display: none; /* Hide the nav items */
+        flex-direction: column;
+        align-items: center;
     }
 }
 
@@ -90,25 +102,27 @@
 @media (min-width:992px) and (max-width:1199px) {
   
     header {
-        width: 50%;
-        float: left;
-        padding: 20px;
+        width: 100%;
+        text-align: center;
+        margin-bottom: 10px;
     }
     
     nav {
-        width: 50%;
-        float: left;
-        padding: 20px;
+        width: 100%;
+        text-align: center;
     }
     
     .navbar-toggler {
-        display: none;
+        display: none; /* Hide the button on desktops */
     }
     
     .collapse-button {
-        display: none;
+        display: none; /* Hide the button on desktops */
     }
     
+    .navbar-nav {
+        display: flex; /* Display nav items inline on desktops */
+        justify-content: center;
     }
 
 
