@@ -1,55 +1,151 @@
 /* Mobile First Design */
 @media (max-width:480px) {
+
+    header {
+        width: 100%;
+        text-align: center;
+        margin-bottom: 10px;
+    }
+    
+    nav {
+        width: 100%;
+        text-align: center;
+    }
+    
+    .navbar-toggler {
+        display: block;
+        background-color: transparent;
+        border: none;
+    }
+    
+    .collapse-button {
+        display: block;
+        text-align: center;
+        margin-top: 10px;
+    }
+    
+    .navbar-nav {
+        flex-direction: column;
+        align-items: center;
+    }
+    
     
 }  
 @media (min-width:481px) and (max-width:767px) {
   
     header {
-        width: 70%; /* Adjust the width as needed */
+        width: 70%;
         float: left;
-    }
-    
-    .collapse-button {
-        display: block;
+        padding: 10px;
     }
     
     nav {
-        width: 30%; /* Adjust the width as needed */
+        width: 30%;
         float: left;
+        padding: 10px;
     }
     
-    /* Style the collapse button */
     .navbar-toggler {
-        display: none; /* Hide the button on tablets */
+        display: none;
     }
+    
+    .collapse-button {
+        display: none;
+    }
+    
+    .navbar-nav {
+        flex-direction: row;
+        justify-content: center;
+    }
+    
 }
 
 
 @media (min-width:768px) and (max-width:991px) {
-  
+    
+    header {
+        width: 60%;
+        float: left;
+        padding: 20px;
+    }
+    
+    nav {
+        width: 40%;
+        float: left;
+        padding: 20px;
+    }
+    
+    .collapse-button {
+        display: none;
+    }
+    
+    /* Adjustments for the content area */
+    .content {
+        width: 100%;
+        padding: 20px;
+    }
 }
+
+
 @media (min-width:992px) and (max-width:1199px) {
   
-        /* Side-by-side layout of header and nav */
-        header {
-            width: 50%; /* Adjust the width as needed */
-            float: left;
-        }
-        
-        .collapse-button {
-            display: none; /* Hide the button on desktops */
-        }
-        
-        nav {
-            width: 50%; /* Adjust the width as needed */
-            float: left;
-        }
+    header {
+        width: 50%;
+        float: left;
+        padding: 20px;
+    }
+    
+    nav {
+        width: 50%;
+        float: left;
+        padding: 20px;
+    }
+    
+    .navbar-toggler {
+        display: none;
+    }
+    
+    .collapse-button {
+        display: none;
+    }
+    
     }
 
 
 @media (min-width:1200px) and (max-width:1919px) {
-  
+    header {
+        width: 40%;
+        float: left;
+        padding: 30px;
+    }
+    
+    nav {
+        width: 60%;
+        float: left;
+        padding: 30px;
+    }
+    
+    .navbar-toggler {
+        display: none;
+    }
 }
+
+
 @media (min-width:1920px) {
-  
+    header {
+        width: 30%;
+        float: left;
+        padding: 40px;
+    }
+    
+    nav {
+        width: 70%;
+        float: left;
+        padding: 40px;
+    }
+    
+    .navbar-toggler {
+        display: none;
+    }
+    
 }

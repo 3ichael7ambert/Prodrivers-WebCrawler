@@ -34,7 +34,7 @@ def scrape_job_data(url):
         return None
 
 if __name__ == "__main__":
-    url = "https://www.prodrivers.com/jobs/?_city=denver&_state=co&_title=driver"
+    url = f"https://www.prodrivers.com/jobs/?_city={city}&_state={state}&_state={keyword}"
     job_data = scrape_job_data(url)
 
     if job_data:

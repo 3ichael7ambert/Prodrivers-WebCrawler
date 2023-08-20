@@ -13,7 +13,8 @@ class JobSearchForm(FlaskForm):
     state = StringField('State')
     # keyword = StringField('Keyword')
     # location = StringField('Location')
-    keyword = SelectField('Job Type', choices=[('Class A', 'Class B'), ('Non CDL', 'Any')])
+    #keyword = SelectField('Job Type', choices=[('Class A', 'Class B'), ('Non CDL', 'Any')])
+    keyword = StringField('Keyword')
     # salary_range = SelectField('Salary Range', choices=[('any', 'Any'), ('low', 'Low'), ('medium', 'Medium'), ('high', 'High')])
 
 class JobPostForm(FlaskForm):

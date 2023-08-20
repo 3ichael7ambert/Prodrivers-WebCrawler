@@ -6,30 +6,47 @@
     <h1>Job Board</h1>
 
         <!-- Job Search Form -->
-        <form action="{{ url_for('job_board') }}" method="get">
+        <form action="{{ url_for('job_board') }}" method="post">
             {{ job_search_form.csrf_token }}
-            
+                    
             <label for="city">City:</label>
-            <input type="text" id="city" name="city" value="{{ request.args.get('city', '') }}">
-    
+            <input type="text" id="city" name="city" value="{{ request.form.city }}">
+        
             <label for="state">State:</label>
-            <input type="text" id="state" name="state" value="{{ request.args.get('state', '') }}">
-            
+            <input type="text" id="state" name="state" value="{{ request.form.state }}">
+                    
             <label for="keyword">Keyword:</label>
-            <!-- <input type="text" id="keyword" name="keyword" value="{{ request.args.get('keyword', '') }}"> -->
             {{ job_search_form.keyword(class="form-control") }}
             <button type="submit">Search</button>
         </form>
+        
 
-    {% if job_data %}
-        <ul>
-            {% for job in job_data %}
-                <li>
-                    <!-- Job details... -->
-                </li>
-            {% endfor %}
-        </ul>
-    {% else %}
-        <p>No job data available.</p>
-    {% endif %}
+        {% if get_flashed_messages() %}
+    <div class="flash-messages">
+        {% for message in get_flashed_messages() %}
+            <div class="flash-message">{{ message }}</div>
+        {% endfor %}
+    </div>
+{% endif %}
+
+{% if job_data %}
+    <ul>
+        {% for job in job_data %}
+            <li>
+                <h2>{{ job.Title }}</h2>
+                <p><strong>Location:</strong> {{ job.Location }}</p>
+                <p><strong>Base Pay:</strong> {{ job["Base Pay"] }}</p>
+                <p><strong>Duties:</strong></p>
+                <ul>
+                    {% for duty in job.Duties %}
+                        <li>{{ duty }}</li>
+                    {% endfor %}
+                </ul>
+            </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>No job data available.</p>
+{% endif %}
+
 {% endblock %}

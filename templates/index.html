@@ -3,27 +3,28 @@
 {% block title %}Job Board{% endblock %}
 
 {% block content %}
-
 Welcome to the Prodriver's App! Explore the highlighted job opportunities listed below. If you're keen on becoming a part of our team, don't forget to register and submit your application.
 
 <h1>Job Board</h1>
-    {% if job_data %}
-        <ul>
-            {% for job in job_data %}
-                <li>
-                    <h2>{{ job.Title }}</h2>
-                    <p><strong>Location:</strong> {{ job.Location }}</p>
-                    <p><strong>Base Pay:</strong> {{ job["Base Pay"] }}</p>
-                    <p><strong>Duties:</strong></p>
-                    <ul>
-                        {% for duty in job.Duties %}
-                            <li>{{ duty }}</li>
-                        {% endfor %}
-                    </ul>
-                </li>
-            {% endfor %}
-        </ul>
-    {% else %}
-        <p>No job data available.</p>
-    {% endif %}
+<p>City: {{ city_param }}</p>
+<p>State: {{ state_param }}</p>
+{% if job_data %}
+    <ul>
+        {% for job in job_data %}
+            <li>
+                <h2>{{ job.Title }}</h2>
+                <p><strong>Location:</strong> {{ job.Location }}</p>
+                <p><strong>Base Pay:</strong> {{ job["Base Pay"] }}</p>
+                <p><strong>Duties:</strong></p>
+                <ul>
+                    {% for duty in job.Duties %}
+                        <li>{{ duty }}</li>
+                    {% endfor %}
+                </ul>
+            </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>No job data available.</p>
+{% endif %}
 {% endblock %}

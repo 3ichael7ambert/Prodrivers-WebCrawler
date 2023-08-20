@@ -4,7 +4,7 @@ from wtforms import StringField, PasswordField, BooleanField, SelectField
 from wtforms.validators import DataRequired
 from flask_sqlalchemy import SQLAlchemy
 from markupsafe import escape # fixes jinja2 escape error
-import requests 
+import requests , random
 
 from models import db, Driver, Client, Dispatcher, Company, Manager, HiddenJob, User
 from forms import LoginForm, JobSearchForm, JobPostForm, JobEditForm, UserProfileForm
@@ -60,33 +60,124 @@ def get_job_data(url):
         return []
     
 
+def get_state_abbreviation(full_state_name):
+    state_mapping = {
+        "Alabama": "AL", "Alaska": "AK", "Arizona": "AZ", "Arkansas": "AR", "California": "CA",
+        "Colorado": "CO", "Connecticut": "CT", "Delaware": "DE", "Florida": "FL", "Georgia": "GA",
+        "Hawaii": "HI", "Idaho": "ID", "Illinois": "IL", "Indiana": "IN", "Iowa": "IA",
+        "Kansas": "KS", "Kentucky": "KY", "Louisiana": "LA", "Maine": "ME", "Maryland": "MD",
+        "Massachusetts": "MA", "Michigan": "MI", "Minnesota": "MN", "Mississippi": "MS", "Missouri": "MO",
+        "Montana": "MT", "Nebraska": "NE", "Nevada": "NV", "New Hampshire": "NH", "New Jersey": "NJ",
+        "New Mexico": "NM", "New York": "NY", "North Carolina": "NC", "North Dakota": "ND", "Ohio": "OH",
+        "Oklahoma": "OK", "Oregon": "OR", "Pennsylvania": "PA", "Rhode Island": "RI", "South Carolina": "SC",
+        "South Dakota": "SD", "Tennessee": "TN", "Texas": "TX", "Utah": "UT", "Vermont": "VT",
+        "Virginia": "VA", "Washington": "WA", "West Virginia": "WV", "Wisconsin": "WI", "Wyoming": "WY"
+    }
+    
+    return state_mapping.get(full_state_name, None)
+
+# List of state abbreviations
+state_abbreviations = ["AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "FL", "GA",
+                       "HI", "ID", "IL", "IN", "IA", "KS", "KY", "LA", "ME", "MD",
+                       "MA", "MI", "MN", "MS", "MO", "MT", "NE", "NV", "NH", "NJ",
+                       "NM", "NY", "NC", "ND", "OH", "OK", "OR", "PA", "RI", "SC",
+                       "SD", "TN", "TX", "UT", "VT", "VA", "WA", "WV", "WI", "WY"]
+def get_random_job_data2():
+    # Choose a random state abbreviation from the list
+    state_param = random.choice(state_abbreviations)
+    
+    # Construct the URL with the random state abbreviation
+    city_param = ""  # You can specify the city if needed
+    url = f"https://www.prodrivers.com/jobs/?_city={city_param}&_state={state_param}"
+    
+    # Fetch random job data
+    job_data = scrape_job_data(url)
+    return job_data
+
+
+def get_random_job_data():
+    # Get random city and state
+    response = requests.get('https://randomuser.me/api/?nat=us')
+    data = response.json()
+    random_state = data['results'][0]['location']['state']
+    random_city = data['results'][0]['location']['city']
+    
+    # Map the full state name to its abbreviation
+    state_abbreviation = get_state_abbreviation(random_state)
+
+    if state_abbreviation:
+        # Construct the URL with the random state abbreviation and city
+        city_param = random_city
+        state_param = state_abbreviation
+        key_param = ''
+        url = f"https://www.prodrivers.com/jobs/?_city=&_state={state_param}"
+
+        # Fetch random job data
+        job_data = scrape_job_data(url)
+        return job_data
+    else:
+        return []
+
 
 # Route for home page (job board)
 @app.route('/')
 def main():
     form = LoginForm()
-    return render_template('index.html', form=form)
+    
+    # Get random city and state
+    response = requests.get('https://randomuser.me/api/?nat=us')
+    data = response.json()
+    random_state = data['results'][0]['location']['state']
+    random_city = data['results'][0]['location']['city']
+    
+    # Map the full state name to its abbreviation
+    state_abbreviation = get_state_abbreviation(random_state)
+
+    if state_abbreviation:
+        # Construct the URL with the random state abbreviation and city
+        city_param = random_city
+        state_param = state_abbreviation
+        key_param = ''
+        url = f"https://www.prodrivers.com/jobs/?_city=&_state={state_param}"
+
+        # Fetch random job data
+        job_data = scrape_job_data(url)
+        
+        # Pass the city and state parameters to the template
+        return render_template('index.html', form=form, job_data=job_data, current_user=current_user,
+                               city_param=city_param, state_param=state_param)
+    else:
+        return render_template('index.html', form=form, current_user=current_user)
+
 
 @app.route('/home')
 def home():
     form = LoginForm()
-    if url:
-        job_data = scrape_job_data(url)  # Pass the URL to the scrape_job_data function
-        return render_template('index.html', form=form, current_user=current_user)
-    else:
-        return render_template('index.html', form=form, current_user=current_user)
+    
+    # Fetch random job data
+    job_data = get_random_job_data2()
+    
+    return render_template('index.html', form=form, current_user=current_user, job_data=job_data)
 
-@app.route('/job_board')
+
+
+@app.route('/job_board', methods=['GET', 'POST'])
 def job_board():
     job_search_form = JobSearchForm()
-    url = request.args.get('url')  # Get the 'url' query parameter from the URL
-    if url:
-        flash("Searching jobs with parameters: city={}, state={}, keyword={}".format(request.args.get('city', ''), request.args.get('state', ''), request.args.get('keyword', '')))
+
+    if request.method == 'POST':
+        city = request.form.get('city')
+        state = request.form.get('state')
+        keyword = request.form.get('keyword')
+
+        # Construct the URL with user input
+        url = f"https://www.prodrivers.com/jobs/?_city={city}&_state={state}&_title={keyword}"
         job_data = scrape_job_data(url)  # Pass the URL to the scrape_job_data function
+
         return render_template('job_board.html', job_search_form=job_search_form, job_data=job_data)
-    else:
-        # Handle the case when 'url' parameter is not provided
-        return render_template('job_board.html', job_search_form=job_search_form)
+
+    return render_template('job_board.html', job_search_form=job_search_form)
+
 
 
 def job_search():
