@@ -1,4 +1,3 @@
-<!-- register.html -->
 {% extends "base.html" %}
 
 {% block title %}Register{% endblock %}
@@ -13,9 +12,13 @@
         {{ form.password.label }} {{ form.password(size=20) }}
         {{ form.first_name.label }} {{ form.first_name(size=20) }}
         {{ form.last_name.label }} {{ form.last_name(size=20) }}
-        {{ form.user_role.label }} {{ form.user_role }}
-        {{ form.license_type.label }} {{ form.license_type }}
-        {{ form.company_name.label }} {{ form.company_name(size=20) }}
+        {{ form.user_role.label }} {{ form.user_role(id="user_role") }}
+        <div id="license_type" style="display: none;">
+            {{ form.license_type.label }} {{ form.license_type() }}
+        </div>
+        <div id="company_name" style="display: none;">
+            {{ form.company_name.label }} {{ form.company_name(size=20) }}
+        </div>
         <button type="submit">Register</button>
     </form>
 

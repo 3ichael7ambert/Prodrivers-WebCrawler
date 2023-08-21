@@ -234,18 +234,31 @@ def logout():
 def register():
     form = RegisterForm() 
     if form.validate_on_submit():
-        username = request.form['username']
-        password = request.form['password']
-        user_role = request.form['user_role'] 
+        try:
+            username = form.username.data
+            password = form.password.data
+            user_role = form.user_role.data
 
-        new_user = User(username=username, password=password, role=user_role)
-        db.session.add(new_user)
-        db.session.commit()
+            new_user = User(username=username)
+            new_user.set_password(password)  # Set the hashed password
+            new_user.role = user_role
+            
+            if user_role == 'driver':
+                new_user.license_type = form.license_type.data
+            elif user_role == 'client':
+                new_user.company_name = form.company_name.data
 
-        flash('Registration successful!', 'success')
-        return redirect(url_for('login'))
+            db.session.add(new_user)
+            db.session.commit()
 
-    return render_template('register.html', form=form) 
+            flash('Registration successful!', 'success')
+            return redirect(url_for('login'))
+        except SQLAlchemyError as e:
+            db.session.rollback()  # Roll back the transaction in case of an error
+            flash('An error occurred during registration.', 'danger')
+            print("Error:", str(e))  # Print the error for debugging purposes
+
+    return render_template('register.html', form=form)
 
 
 
