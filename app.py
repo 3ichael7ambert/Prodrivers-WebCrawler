@@ -203,16 +203,15 @@ def login():
         # Check login credentials and authenticate user
         user = User.query.filter_by(username=form.username.data).first()
         if user and user.check_password(form.password.data):
-            login_user(user)  # Log in the user
+            login_user(user)
             # Redirect to the appropriate dashboard based on user role
-            user_type = get_user_type(user.username)
-            if user_type == 'driver':
+            if user.role == 'driver':
                 return redirect(url_for('driver_dashboard', username=user.username))
-            elif user_type == 'client':
+            elif user.role == 'client':
                 return redirect(url_for('client_dashboard', username=user.username))
-            elif user_type == 'dispatcher':
+            elif user.role == 'dispatcher':
                 return redirect(url_for('dispatcher_dashboard', username=user.username))
-            elif user_type == 'manager':
+            elif user.role == 'manager':
                 return redirect(url_for('manager_dashboard', username=user.username))
             else:
                 flash('Unknown user role', 'danger')

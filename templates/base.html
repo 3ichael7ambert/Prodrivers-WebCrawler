@@ -19,9 +19,22 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav">
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('home') }}">Home</a>
-                    </li>
+                    <li><a href="{{ url_for('home') }}">Home</a></li>
+                    {% if current_user.is_authenticated %}
+                        {% if current_user.role == 'driver' %}
+                            <li><a href="{{ url_for('driver_dashboard', username=current_user.username) }}">Driver Dashboard</a></li>
+                        {% elif current_user.role == 'client' %}
+                            <li><a href="{{ url_for('client_dashboard', username=current_user.username) }}">Client Dashboard</a></li>
+                        {% elif current_user.role == 'dispatcher' %}
+                            <li><a href="{{ url_for('dispatcher_dashboard', username=current_user.username) }}">Dispatcher Dashboard</a></li>
+                        {% elif current_user.role == 'manager' %}
+                            <li><a href="{{ url_for('manager_dashboard', username=current_user.username) }}">Manager Dashboard</a></li>
+                        {% endif %}
+                        <li><a href="{{ url_for('logout') }}">Logout</a></li>
+                    {% else %}
+                        <li><a href="{{ url_for('login') }}">Login</a></li>
+                        <li><a href="{{ url_for('register') }}">Register</a></li>
+                    {% endif %}
                     <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('about') }}">About</a>
                     </li>
@@ -67,6 +80,6 @@
     </footer>
 
 
-    <script src="/static/script.js"></script>
+    <script src="static/script.js"></script>
 </body>
 </html>

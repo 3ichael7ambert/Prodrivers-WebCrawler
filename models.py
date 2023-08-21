@@ -64,7 +64,8 @@ class Manager(db.Model):
     drivers = db.relationship('Driver', back_populates='assigned_manager')
     assigned_manager = db.relationship('Driver', back_populates='manager', viewonly=True)
     clients = db.relationship('Client', back_populates='manager')
-    dispatchers = db.relationship('Dispatcher', backref='manager')    companies = db.relationship('Company', backref='manager')
+    dispatchers = db.relationship('Dispatcher', backref='manager')    
+    companies = db.relationship('Company', backref='manager')
     jobs = db.relationship('Job', backref='manager')
     manager_id = db.Column(db.Integer, db.ForeignKey('manager.id'))
     manager = db.relationship('Manager', back_populates='clients')  # Update this line
