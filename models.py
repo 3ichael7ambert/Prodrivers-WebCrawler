@@ -2,6 +2,7 @@ from datetime import datetime
 from flask_bcrypt import Bcrypt
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import Enum
+from sqlalchemy.orm import relationship
 from enum import Enum as PyEnum
 
 bcrypt = Bcrypt()
@@ -61,14 +62,13 @@ class Job(db.Model):
     client_id = db.Column(db.Integer, db.ForeignKey('client.id'))
     client = db.relationship('Client', back_populates='jobs')
     manager_id = db.Column(db.Integer, db.ForeignKey('manager.id'))
-    manager = db.relationship('Manager', back_populates='jobs')
-    
+    job_manager = db.relationship('Manager', back_populates='jobs', uselist=False)
 class Client(db.Model):
     id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
     manager_id = db.Column(db.Integer, db.ForeignKey('manager.id'))
     otherJobDetails = db.Column(db.String)
     jobs = db.relationship('Job', back_populates='client')
-    manager = db.relationship('Manager', back_populates='clients')  # Update this line
+    manager = db.relationship('Manager', back_populates='clients')  
 
 class Manager(db.Model):
     id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
@@ -76,13 +76,13 @@ class Manager(db.Model):
     lastName = db.Column(db.String)
     drivers = db.relationship('Driver', back_populates='assigned_manager')
     assigned_manager = db.relationship('Driver', back_populates='manager', viewonly=True)
-    clients = db.relationship('Client', back_populates='manager')
+    clients = db.relationship('Client')  
     dispatchers = db.relationship('Dispatcher', backref='managers', lazy=True)    
     companies = db.relationship('Company', secondary=manager_company_association, back_populates='managers')    
-    jobs = db.relationship('Job', backref='manager')
+    jobs = db.relationship('Job', back_populates='job_manager')
     manager_id = db.Column(db.Integer, db.ForeignKey('manager.id'))
-    manager = db.relationship('Manager', back_populates='clients')  # Update this line
-    
+    manager = db.relationship('Manager', back_populates='clients') 
+ 
 
 class Dispatcher(db.Model):
     id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
