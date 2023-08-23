@@ -5,6 +5,7 @@ from sqlalchemy import Enum
 from sqlalchemy.orm import relationship
 from enum import Enum as PyEnum
 
+from werkzeug.security import generate_password_hash, check_password_hash
 
 bcrypt = Bcrypt()
 db = SQLAlchemy()
@@ -15,12 +16,10 @@ manager_company_association = db.Table(
     db.Column('company_id', db.Integer, db.ForeignKey('company.id'))
 )
 
-def connect_db(app):
-    """Connect to the database."""
-    db.app = app
-    db.init_app(app)
+
 # User related tables
 class User(db.Model):
+    __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
@@ -34,6 +33,49 @@ class User(db.Model):
 
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
+    
+    @classmethod
+    def signup(cls, username, email, password, first_name, last_name, user_role, license_type=None, company_name=None):
+        """Sign up user.
+
+        Hashes password and adds user to system.
+        """
+
+        hashed_pwd = bcrypt.generate_password_hash(password).decode('UTF-8')
+
+        user = User(
+            username=username,
+            email=email,
+            password=hashed_pwd,
+            first_name=first_name,
+            last_name=last_name,
+            user_role=user_role,
+            license_type=license_type,
+            company_name=company_name,
+        )
+
+        db.session.add(user)
+        return user
+
+    @classmethod
+    def authenticate(cls, username, password, remember_me):
+        """Find user with `username` and `password`.
+
+        This is a class method (call it on the class, not an individual user.)
+        It searches for a user whose password hash matches this password
+        and, if it finds such a user, returns that user object.
+
+        If can't find matching user (or if password is wrong), returns False.
+        """
+
+        user = cls.query.filter_by(username=username).first()
+
+        if user:
+            is_auth = bcrypt.check_password_hash(user.password, password)
+            if is_auth:
+                return user
+
+        return False
 
 
 class UserRole(Enum):
@@ -43,6 +85,7 @@ class UserRole(Enum):
     MANAGER = 'manager'
 
 class Driver(db.Model):
+    __tablename__ = 'drivers'
     id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
     assigned_manager_id = db.Column(db.Integer, db.ForeignKey('manager.id'))
     otherJobDetails = db.Column(db.String)
@@ -50,16 +93,17 @@ class Driver(db.Model):
     driverType = db.Column(db.String)
     currentAvailability = db.Column(db.String)
     isAssigned = db.Column(db.Boolean)
-    assigned_manager = db.relationship('Manager', back_populates='drivers')
-    manager = db.relationship('Manager', back_populates='assigned_manager', viewonly=True)
-    
+    assigned_manager = db.relationship('Manager', back_populates='assigned_drivers')
+ 
 class DriverJob(db.Model):
+    __tablename__ = 'driver_job'
     id = db.Column(db.Integer, primary_key=True)
     driver_id = db.Column(db.Integer, db.ForeignKey('driver.id'))
     job_id = db.Column(db.Integer, db.ForeignKey('job.id'))
     
 
 class Client(db.Model):
+    __tablename__ = 'clients'
     id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
     manager_id = db.Column(db.Integer, db.ForeignKey('manager.id'))
     otherJobDetails = db.Column(db.String)
@@ -82,26 +126,28 @@ class Job(db.Model):
 
 # Manager related tables
 class Manager(db.Model):
+    __tablename__ = 'managers'
     id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
     firstName = db.Column(db.String)
     lastName = db.Column(db.String)
     drivers = db.relationship('Driver', back_populates='assigned_manager')
+    assigned_drivers = db.relationship('Driver', back_populates='assigned_manager')
     assigned_manager = db.relationship('Driver', back_populates='manager', viewonly=True)
     clients = db.relationship('Client')  
-    dispatchers = db.relationship('Dispatcher', backref='managers', lazy=True)    
-    companies = db.relationship('Company', secondary=manager_company_association, back_populates='managers')    
+    dispatchers = db.relationship('Dispatcher', backref='manager', lazy=True)
+    companies = db.relationship('Company', secondary=manager_company_association, back_populates='managers')
     jobs = db.relationship('Job', back_populates='job_manager')
-    
 
 class Dispatcher(db.Model):
+    __tablename__ = 'dispatchers'
     id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
     firstName = db.Column(db.String)
     lastName = db.Column(db.String)
     manager_id = db.Column(db.Integer, db.ForeignKey('manager.id'), nullable=False)
-    manager = db.relationship('Manager', backref='managers')
-    
+    manager = db.relationship('Manager', back_populates='managers', overlaps="dispatchers,managers")
 
 class Company(db.Model):
+    __tablename__ = 'companies'
     id = db.Column(db.Integer, primary_key=True)
     companyName = db.Column(db.String)
     name = db.Column(db.String(120), unique=True, nullable=False)
@@ -109,6 +155,7 @@ class Company(db.Model):
     
 
 class HiddenJob(db.Model):
+    __tablename__ = 'hidden_jobs'
     id = db.Column(db.Integer, primary_key=True)
     jobName = db.Column(db.String)
     jobDescription = db.Column(db.String)
@@ -118,6 +165,7 @@ class HiddenJob(db.Model):
     isHidden = db.Column(db.Boolean)
     
 
+ 
 
 
 def connect_db(app):
