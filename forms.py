@@ -29,7 +29,7 @@ class RegisterForm(FlaskForm):
     password = PasswordField('Password', validators=[DataRequired()])
     first_name = StringField('First Name', validators=[DataRequired()])
     last_name = StringField('Last Name', validators=[DataRequired()])
-    user_role = SelectField('User Role', choices=[('', 'Select User Role'), ('driver', 'Driver'), ('client', 'Client'), ('dispatcher', 'Dispatcher')],
+    user_role = SelectField('User Role', choices=[('', 'Select User Role'), ('driver', 'Driver'), ('client', 'Client'), ('dispatcher', 'Dispatcher'),('manager', 'Manager')],
                             validators=[DataRequired()])
     license_type = SelectField('License Type', choices=[('', 'Select License Type'), ('class_a', 'Class A'), ('class_b', 'Class B'), ('non_cdl', 'Non-CDL')],
                                render_kw={'style': 'display: none;'})

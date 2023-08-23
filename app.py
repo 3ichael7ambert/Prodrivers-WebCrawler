@@ -1,4 +1,5 @@
-from flask import Flask, render_template, redirect, url_for, request
+import os
+from flask import Flask, render_template, redirect, url_for, request, flash, session, g
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, SelectField
 from wtforms.validators import DataRequired
@@ -6,7 +7,9 @@ from flask_sqlalchemy import SQLAlchemy
 from markupsafe import escape # fixes jinja2 escape error
 import requests , random
 
-from models import db, Driver, Client, Dispatcher, Company, Manager, HiddenJob, User
+from flask_debugtoolbar import DebugToolbarExtension
+
+from models import db, connect_db, Driver, Client, Dispatcher, Company, Manager, HiddenJob, User
 from forms import LoginForm, RegisterForm, JobSearchForm, JobPostForm, JobEditForm, UserProfileForm
 
 from webcrawl import scrape_job_data
@@ -15,12 +18,24 @@ from werkzeug.utils import secure_filename
 
 from flask_login import LoginManager, UserMixin, login_user, current_user, login_required, logout_user
 
+
+CURR_USER_KEY = "curr_user"
+
 app = Flask(__name__)
+
 app.config['SECRET_KEY'] = 'SeKRuT'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['SQLALCHEMY_ECHO'] = False
+app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///driver_jobs_db'
-db = SQLAlchemy(app)
 
+
+#toolbar = DebugToolbarExtension(app)
+app.app_context().push()
+connect_db(app)
+db.create_all() 
+#db = SQLAlchemy(app)
+#db.init_app(app)
 
 ##Random City Method
 # Make a request to the Random User Generator API
@@ -39,22 +54,39 @@ url = f"https://www.prodrivers.com/jobs/?_city={city_param}&_state={state_param}
 job_data = scrape_job_data(f"https://www.prodrivers.com/jobs/?_city={city_param}&_state={state_param}&_title={key_param}") 
 
 # Create a LoginManager instance
-login_manager = LoginManager(app)
+#login_manager = LoginManager(app)
 
-@login_manager.user_loader
+#@login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
 
+@app.before_request
+def add_user_to_g():
+    """If we're logged in, add curr user to Flask global."""
 
+    if CURR_USER_KEY in session:
+        g.user = User.query.get(session[CURR_USER_KEY])
+
+    else:
+        g.user = None
+
+
+def do_login(user):
+    """Log in user."""
+
+    session[CURR_USER_KEY] = user.id
+
+def do_logout():
+    """Logout user."""
+
+    if CURR_USER_KEY in session:
+        del session[CURR_USER_KEY]
 
 def get_job_data(url):
     response = requests.get(url)
     if response.status_code == 200:
         soup = BeautifulSoup(response.content, 'html.parser')
-        # Parse the job data from the soup object
-        # Replace this with your actual scraping logic
-        job_data = []
-        # ...
+
         return job_data
     else:
         return []
@@ -144,10 +176,10 @@ def main():
         job_data = scrape_job_data(url)
         
         # Pass the city and state parameters to the template
-        return render_template('index.html', form=form, job_data=job_data, current_user=current_user,
+        return render_template('index.html', form=form, job_data=job_data,
                                city_param=city_param, state_param=state_param)
     else:
-        return render_template('index.html', form=form, current_user=current_user)
+        return render_template('index.html', form=form)
 
 
 @app.route('/home')
@@ -157,7 +189,7 @@ def home():
     # Fetch random job data
     job_data = get_random_job_data2()
     
-    return render_template('index.html', form=form, current_user=current_user, job_data=job_data)
+    return render_template('index.html', form=form, job_data=job_data)
 
 
 
@@ -203,7 +235,7 @@ def login():
         # Check login credentials and authenticate user
         user = User.query.filter_by(username=form.username.data).first()
         if user and user.check_password(form.password.data):
-            login_user(user)
+            #login_user(user)
             # Redirect to the appropriate dashboard based on user role
             if user.role == 'driver':
                 return redirect(url_for('driver_dashboard', username=user.username))
@@ -224,15 +256,26 @@ def login():
 
 # Route for logging out
 @app.route('/logout')
-@login_required
+#@login_required
 def logout():
-    logout_user()
+    #logout_user()
+    """Handle logout of user."""
+    if g.user:
+        do_logout()
+        flash("Successfully logged out.", "success")
+    return redirect("/login")
+
     return redirect(url_for('home'))
 
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
-    form = RegisterForm() 
+    form = RegisterForm()
+    
+    if g.user:
+        flash('You are already registered and logged in.', 'info')
+        return redirect(url_for('home'))
+    
     if form.validate_on_submit():
         try:
             username = form.username.data
@@ -240,7 +283,7 @@ def register():
             user_role = form.user_role.data
 
             new_user = User(username=username)
-            new_user.set_password(password)  # Set the hashed password
+            new_user.set_password(password)
             new_user.role = user_role
             
             if user_role == 'driver':
@@ -251,12 +294,26 @@ def register():
             db.session.add(new_user)
             db.session.commit()
 
-            flash('Registration successful!', 'success')
-            return redirect(url_for('login'))
+            do_login(new_user)  # Log in the new user
+            
+            if user_role == 'driver':
+                return redirect(url_for('driver_dashboard', username=new_user.username))
+            elif user_role == 'client':
+                return redirect(url_for('client_dashboard', username=new_user.username))
+            elif user_role == 'dispatcher':
+                return redirect(url_for('dispatcher_dashboard', username=new_user.username))
+            elif user_role == 'manager':
+                return redirect(url_for('manager_dashboard', username=new_user.username))
+            else:
+                flash('Unknown user role', 'danger')
+                return redirect(url_for('home'))
         except SQLAlchemyError as e:
-            db.session.rollback()  # Roll back the transaction in case of an error
+            db.session.rollback()
             flash('An error occurred during registration.', 'danger')
-            print("Error:", str(e))  # Print the error for debugging purposes
+            print("Error:", str(e))
+        except IntegrityError:
+            flash("Username already taken", 'danger')
+            return render_template('register.html', form=form)
 
     return render_template('register.html', form=form)
 
@@ -264,10 +321,9 @@ def register():
 
 
 
-
 # Route for driver dashboard
 @app.route('/driver_dashboard/<username>')
-@login_required
+#@login_required
 def driver_dashboard(username):
     # Retrieve driver information based on username and display the dashboard
     driver = Driver.query.filter_by(username=username).first()
@@ -275,7 +331,7 @@ def driver_dashboard(username):
 
 # Route for dispatcher dashboard
 @app.route('/dispatch_dashboard/<username>')
-@login_required
+#@login_required
 def dispatch_dashboard(username):
     # Retrieve dispatcher information based on username and display the dashboard
     dispatcher = Dispatcher.query.filter_by(username=username).first()
@@ -283,7 +339,7 @@ def dispatch_dashboard(username):
 
 # Route for client dashboard
 @app.route('/client_dashboard/<username>')
-@login_required
+#@login_required
 def client_dashboard(username):
     # Retrieve client information based on username and display the dashboard
     client = Client.query.filter_by(username=username).first()
@@ -291,7 +347,7 @@ def client_dashboard(username):
 
 # Route for manager dashboard
 @app.route('/manager_dashboard/<username>')
-@login_required
+#@login_required
 def manager_dashboard(username):
     # Retrieve client information based on username and display the dashboard
     manager = Manager.query.filter_by(username=username).first()
@@ -349,8 +405,8 @@ def contact():
     return render_template('contact.html', form=form)
 
 
-
 if __name__ == '__main__':
     with app.app_context():
+        connect_db(app)
         db.create_all()
     app.run(debug=True)

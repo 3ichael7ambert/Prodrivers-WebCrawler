@@ -5,6 +5,7 @@ from sqlalchemy import Enum
 from sqlalchemy.orm import relationship
 from enum import Enum as PyEnum
 
+
 bcrypt = Bcrypt()
 db = SQLAlchemy()
 
@@ -14,6 +15,11 @@ manager_company_association = db.Table(
     db.Column('company_id', db.Integer, db.ForeignKey('company.id'))
 )
 
+def connect_db(app):
+    """Connect to the database."""
+    db.app = app
+    db.init_app(app)
+# User related tables
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
@@ -46,12 +52,21 @@ class Driver(db.Model):
     isAssigned = db.Column(db.Boolean)
     assigned_manager = db.relationship('Manager', back_populates='drivers')
     manager = db.relationship('Manager', back_populates='assigned_manager', viewonly=True)
-
+    
 class DriverJob(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     driver_id = db.Column(db.Integer, db.ForeignKey('driver.id'))
     job_id = db.Column(db.Integer, db.ForeignKey('job.id'))
+    
 
+class Client(db.Model):
+    id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
+    manager_id = db.Column(db.Integer, db.ForeignKey('manager.id'))
+    otherJobDetails = db.Column(db.String)
+    jobs = db.relationship('Job', back_populates='client')
+    manager = db.relationship('Manager', back_populates='clients')
+
+# Job related tables
 class Job(db.Model):
     __tablename__ = 'job'
     id = db.Column(db.Integer, primary_key=True)
@@ -63,13 +78,9 @@ class Job(db.Model):
     client = db.relationship('Client', back_populates='jobs')
     manager_id = db.Column(db.Integer, db.ForeignKey('manager.id'))
     job_manager = db.relationship('Manager', back_populates='jobs', uselist=False)
-class Client(db.Model):
-    id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
-    manager_id = db.Column(db.Integer, db.ForeignKey('manager.id'))
-    otherJobDetails = db.Column(db.String)
-    jobs = db.relationship('Job', back_populates='client')
-    manager = db.relationship('Manager', back_populates='clients')  
+    
 
+# Manager related tables
 class Manager(db.Model):
     id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
     firstName = db.Column(db.String)
@@ -80,9 +91,7 @@ class Manager(db.Model):
     dispatchers = db.relationship('Dispatcher', backref='managers', lazy=True)    
     companies = db.relationship('Company', secondary=manager_company_association, back_populates='managers')    
     jobs = db.relationship('Job', back_populates='job_manager')
-    manager_id = db.Column(db.Integer, db.ForeignKey('manager.id'))
-    manager = db.relationship('Manager', back_populates='clients') 
- 
+    
 
 class Dispatcher(db.Model):
     id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
@@ -90,13 +99,14 @@ class Dispatcher(db.Model):
     lastName = db.Column(db.String)
     manager_id = db.Column(db.Integer, db.ForeignKey('manager.id'), nullable=False)
     manager = db.relationship('Manager', backref='managers')
+    
 
 class Company(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     companyName = db.Column(db.String)
     name = db.Column(db.String(120), unique=True, nullable=False)
     managers = db.relationship('Manager', secondary=manager_company_association, back_populates='companies')
-
+    
 
 class HiddenJob(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -106,3 +116,16 @@ class HiddenJob(db.Model):
     jobRateOfPay = db.Column(db.String)
     otherJobDetails = db.Column(db.String)
     isHidden = db.Column(db.Boolean)
+    
+
+
+
+def connect_db(app):
+    """Connect this database to provided Flask app.
+
+    You should call this in your Flask app.
+    """
+
+    db.app = app
+    db.init_app(app)
+
