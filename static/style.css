@@ -5,11 +5,13 @@
         width: 100%;
         text-align: center;
         margin-bottom: 10px;
+        background-color: red;
     }
     
     nav {
         width: 100%;
         text-align: center;
+        background-color: black;
     }
     
     .navbar-toggler {
@@ -22,12 +24,14 @@
         display: block;
         text-align: center;
         margin-top: 10px;
+        color: white;
     }
     
     .navbar-nav {
         display: none; /* Hide the nav items */
         flex-direction: column;
         align-items: center;
+        background-color: grey;
     }
     
     
@@ -38,11 +42,15 @@
         width: 70%;
         float: left;
         padding: 10px;
+        text-align: center;
+        margin-bottom: 10px;
+        background-color: red;
     }
     
     nav {
         width: 100%;
         text-align: center;
+        background-color: black;
     }
     
     .navbar-toggler {
@@ -55,12 +63,14 @@
         display: block;
         text-align: center;
         margin-top: 10px;
+        color: white;
     }
     
     .navbar-nav {
         display: none; /* Hide the nav items */
         flex-direction: column;
         align-items: center;
+        background-color: grey;
     }
     
 }
@@ -72,29 +82,34 @@
         width: 100%;
         text-align: center;
         margin-bottom: 10px;
+        background-color: red;
     }
     
     nav {
         width: 100%;
         text-align: center;
+        background-color: black;
     }
     
     .navbar-toggler {
         display: block;
         background-color: transparent;
         border: none;
+        
     }
     
     .collapse-button {
         display: block;
         text-align: center;
         margin-top: 10px;
+        color: white;
     }
     
     .navbar-nav {
         display: none; /* Hide the nav items */
         flex-direction: column;
         align-items: center;
+        background-color: grey;
     }
 }
 
@@ -105,38 +120,51 @@
         width: 100%;
         text-align: center;
         margin-bottom: 10px;
+        margin-bottom: 10px;
+        background-color: red;
     }
     
     nav {
         width: 100%;
         text-align: center;
+        background-color: black;
     }
     
     .navbar-toggler {
+        display: block;
+        background-color: transparent;
         display: none; /* Hide the button on desktops */
     }
     
     .collapse-button {
+        text-align: center;
+        margin-top: 10px;
+        color: white;
         display: none; /* Hide the button on desktops */
     }
     
     .navbar-nav {
         display: flex; /* Display nav items inline on desktops */
         justify-content: center;
+        background-color: grey;
     }
-
+}
 
 @media (min-width:1200px) and (max-width:1919px) {
     header {
         width: 40%;
         float: left;
         padding: 30px;
+        text-align: center;
+        margin-bottom: 10px;
+        background-color: red;
     }
     
     nav {
         width: 60%;
         float: left;
         padding: 30px;
+        background-color: black;
     }
     
     .navbar-toggler {
@@ -150,15 +178,21 @@
         width: 30%;
         float: left;
         padding: 40px;
+        text-align: center;
+        margin-bottom: 10px;
+        background-color: red;
     }
     
     nav {
         width: 70%;
         float: left;
         padding: 40px;
+        background-color: black;
     }
     
     .navbar-toggler {
+        display: block;
+        background-color: transparent;
         display: none;
     }
     

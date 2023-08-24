@@ -18,6 +18,7 @@ from webcrawl import scrape_job_data
 from werkzeug.utils import secure_filename
 
 from sqlalchemy.exc import IntegrityError
+from sqlalchemy.orm import joinedload
 
 CURR_USER_KEY = "curr_user"
 
@@ -33,7 +34,7 @@ app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = True
 app.config['SECRET_KEY'] = 'SeKRuT'
 
 
-debug = DebugToolbarExtension(app)
+toolbar = DebugToolbarExtension(app)
 
 app.app_context().push()
 connect_db(app)
@@ -58,38 +59,6 @@ job_data = scrape_job_data(f"https://www.prodrivers.com/jobs/?_city={city_param}
 
 
 
-@app.before_request
-def add_user_to_g():
-    """If we're logged in, add curr user to Flask global."""
-
-    if CURR_USER_KEY in session:
-        g.user = User.query.get(session[CURR_USER_KEY])
-
-    else:
-        g.user = None
-
-@app.before_request
-def load_logged_in_user():
-    user_id = session.get('user_id')
-    g.user = User.query.get(user_id) if user_id else None
-
-
-
-def do_login(user):
-    """Log in user."""
-    user = User.query.filter_by(username=username).first()
-    if user and user.check_password(password):
-        session[CURR_USER_KEY] = user.id
-        g.user = user
-        return True
-    return False
-def do_logout():
-    """Logout user."""
-
-    if CURR_USER_KEY in session:
-        del session[CURR_USER_KEY]
-    session.pop(CURR_USER_KEY, None)
-    g.user = None
 
 def get_job_data(url):
     response = requests.get(url)
@@ -123,6 +92,156 @@ state_abbreviations = ["AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "FL", "GA
                        "MA", "MI", "MN", "MS", "MO", "MT", "NE", "NV", "NH", "NJ",
                        "NM", "NY", "NC", "ND", "OH", "OK", "OR", "PA", "RI", "SC",
                        "SD", "TN", "TX", "UT", "VT", "VA", "WA", "WV", "WI", "WY"]
+
+
+
+
+##############################################################################
+# User signup/login/logout
+
+
+
+@app.before_request
+def add_user_to_g():
+    """If we're logged in, add curr user to Flask global."""
+
+    if CURR_USER_KEY in session:
+        g.user = User.query.get(session[CURR_USER_KEY])
+
+    else:
+        g.user = None
+
+@app.before_request
+def load_logged_in_user():
+    user_id = session.get('user_id')
+    g.user = User.query.get(user_id) if user_id else None
+
+
+
+def do_login(user):
+    """Log in user."""
+    
+    user = User.query.filter_by(username=username).first()
+    if user and user.check_password(password):
+        session[CURR_USER_KEY] = user.id
+        g.user = user
+        return True
+    return False
+
+def do_logout():
+    """Logout user."""
+
+    if CURR_USER_KEY in session:
+        del session[CURR_USER_KEY]
+    session.pop(CURR_USER_KEY, None)
+    g.user = None
+
+
+# Route for login page
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    form = LoginForm()
+    if form.validate_on_submit():
+        # Check login credentials and authenticate user
+        username = form.username.data
+        password = form.password.data
+        remember_me = form.remember_me.data
+        user = User.authenticate(form.username.data,
+                                 form.password.data,
+                                 form.remember_me.data)
+        if do_login(username, password):
+            flash('Login successful', 'success')
+            return redirect(url_for('dashboard'))  # Redirect to your dashboard route
+        else:
+            flash('Invalid username or password', 'danger')
+        if user:
+            do_login(user)
+            flash(f"Hello, {user.username}!", "success")
+            return redirect("/")
+        if user and user.check_password(form.password.data):
+            #login_user(user)
+            # Redirect to the appropriate dashboard based on user role
+            if user.role == 'driver':
+                return redirect(url_for('driver_dashboard', username=user.username))
+            elif user.role == 'client':
+                return redirect(url_for('client_dashboard', username=user.username))
+            elif user.role == 'dispatcher':
+                return redirect(url_for('dispatcher_dashboard', username=user.username))
+            elif user.role == 'manager':
+                return redirect(url_for('manager_dashboard', username=user.username))
+            else:
+                flash('Unknown user role', 'danger')
+                return redirect(url_for('home'))
+        else:
+            flash('Invalid username or password', 'danger')
+
+    return render_template('login.html', form=form)
+
+
+# Route for logging out
+@app.route('/logout')
+#@login_required
+def logout():
+    #logout_user()
+    """Handle logout of user."""
+    do_logout()
+    flash('You have been logged out', 'info')
+    return redirect(url_for('login'))
+    if g.user:
+        do_logout()
+        flash("Successfully logged out.", "success")
+    return redirect("/login")
+
+    return redirect(url_for('home'))
+
+
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    """Handle user signup.
+
+    Create new user and add to DB. Redirect to home page.
+
+    If form not valid, present form.
+
+    If the there already is a user with that username: flash message
+    and re-present form.
+    """
+        
+    form = RegisterForm()
+    
+    if g.user:
+        flash('You are already registered and logged in.', 'info')
+        return redirect(url_for('home'))
+    
+    if form.validate_on_submit():
+        try:
+            user = User.signup(
+                username=form.username.data,
+                email=form.email.data,
+                password=form.password.data,
+                first_name=form.first_name.data,
+                last_name=form.last_name.data,
+                user_role=form.user_role.data,
+                license_type=form.license_type.data,
+                company_name=form.company_name.data,
+           )
+            db.session.commit()
+        except IntegrityError:
+            flash("Username or email already taken", 'danger')
+            return render_template('register.html', form=form)
+        
+        do_login(user)
+        return redirect("/")
+    else:
+        return render_template('register.html', form=form)
+
+
+
+
+##############################################################################
+# General user routes:
+
+
 def get_random_job_data2():
     # Choose a random state abbreviation from the list
     state_param = random.choice(state_abbreviations)
@@ -235,108 +354,6 @@ def job_search():
         return render_template('job_board.html', job_search_form=job_search_form, job_data=job_data)
     else:
         return render_template('job_board.html', job_search_form=job_search_form)
-
-# Route for login page
-@app.route('/login', methods=['GET', 'POST'])
-def login():
-    form = LoginForm()
-    if form.validate_on_submit():
-        # Check login credentials and authenticate user
-        username = form.username.data
-        password = form.password.data
-        remember_me = form.remember_me.data
-        user = User.authenticate(form.username.data,
-                                 form.password.data,
-                                 form.remember_me.data)
-        if do_login(username, password):
-            flash('Login successful', 'success')
-            return redirect(url_for('dashboard'))  # Redirect to your dashboard route
-        else:
-            flash('Invalid username or password', 'danger')
-        if user:
-            do_login(user)
-            flash(f"Hello, {user.username}!", "success")
-            return redirect("/")
-        if user and user.check_password(form.password.data):
-            #login_user(user)
-            # Redirect to the appropriate dashboard based on user role
-            if user.role == 'driver':
-                return redirect(url_for('driver_dashboard', username=user.username))
-            elif user.role == 'client':
-                return redirect(url_for('client_dashboard', username=user.username))
-            elif user.role == 'dispatcher':
-                return redirect(url_for('dispatcher_dashboard', username=user.username))
-            elif user.role == 'manager':
-                return redirect(url_for('manager_dashboard', username=user.username))
-            else:
-                flash('Unknown user role', 'danger')
-                return redirect(url_for('home'))
-        else:
-            flash('Invalid username or password', 'danger')
-
-    return render_template('login.html', form=form)
-
-
-# Route for logging out
-@app.route('/logout')
-#@login_required
-def logout():
-    #logout_user()
-    """Handle logout of user."""
-    do_logout()
-    flash('You have been logged out', 'info')
-    return redirect(url_for('login'))
-    if g.user:
-        do_logout()
-        flash("Successfully logged out.", "success")
-    return redirect("/login")
-
-    return redirect(url_for('home'))
-
-
-@app.route('/register', methods=['GET', 'POST'])
-def register():
-    """Handle user signup.
-
-    Create new user and add to DB. Redirect to home page.
-
-    If form not valid, present form.
-
-    If the there already is a user with that username: flash message
-    and re-present form.
-    """
-        
-    form = RegisterForm()
-    
-    
-    if g.user:
-        flash('You are already registered and logged in.', 'info')
-        return redirect(url_for('home'))
-    
-    if form.validate_on_submit():
-        try:
-            user = User.signup(
-                username=form.username.data,
-                email=form.email.data,
-                password=form.password.data,
-                first_name=form.first_name.data,
-                last_name=form.last_name.data,
-                user_role=form.user_role.data,
-                license_type=form.license_type.data,
-                company_name=form.company_name.data,
-           )
-            db.session.commit()
-        except IntegrityError:
-            flash("Username or email already taken", 'danger')
-            return render_template('register.html', form=form)
-        
-        do_login(user)
-        return redirect("/")
-    
-    return render_template('register.html', form=form)
-
-
-
 
 
 

@@ -93,6 +93,7 @@ class Driver(db.Model):
     driverType = db.Column(db.String)
     currentAvailability = db.Column(db.String)
     isAssigned = db.Column(db.Boolean)
+    assigned_manager_id = db.Column(db.Integer, db.ForeignKey('manager.id'))
     assigned_manager = db.relationship('Manager', back_populates='assigned_drivers')
  
 class DriverJob(db.Model):
@@ -131,7 +132,7 @@ class Manager(db.Model):
     firstName = db.Column(db.String)
     lastName = db.Column(db.String)
     drivers = db.relationship('Driver', back_populates='assigned_manager')
-    assigned_drivers = db.relationship('Driver', back_populates='assigned_manager')
+    assigned_drivers = db.relationship('Driver', back_populates='assigned_manager')    
     assigned_manager = db.relationship('Driver', back_populates='manager', viewonly=True)
     clients = db.relationship('Client')  
     dispatchers = db.relationship('Dispatcher', backref='manager', lazy=True)
