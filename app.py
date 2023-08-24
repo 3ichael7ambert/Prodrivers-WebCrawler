@@ -143,9 +143,10 @@ def login():
     form = LoginForm()
     if form.validate_on_submit():
         # Check login credentials and authenticate user
-        username = form.username.data
-        password = form.password.data
-        remember_me = form.remember_me.data
+        
+        # username = form.username.data
+        # password = form.password.data
+        # remember_me = form.remember_me.data
         user = User.authenticate(form.username.data,
                                  form.password.data,
                                  form.remember_me.data)
