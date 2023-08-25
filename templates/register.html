@@ -7,9 +7,10 @@
     <form id="register-form" action="{{ url_for('register') }}" method="post">
         <!-- Register form fields -->
         {{ form.hidden_tag() }}
+        {{ form.csrf_token() }}
         {{ form.username.label }} {{ form.username(size=20) }}
         {{ form.email.label }} {{ form.email(size=20) }}
-        {{ form.password.label }} {{ form.password(size=20) }}
+        {{ form.password_hash.label }} {{ form.password_hash(size=20) }}
         {{ form.first_name.label }} {{ form.first_name(size=20) }}
         {{ form.last_name.label }} {{ form.last_name(size=20) }}
         {{ form.user_role.label }} {{ form.user_role(id="user_role") }}
@@ -24,6 +25,24 @@
 
     <button id="switch-form">Switch to Login</button>
 
+
+
+    <form method="POST" id="user_form">
+        {{ form.hidden_tag() }}
+  
+        {% for field in form if field.widget.input_type != 'hidden' %}
+          {% for error in field.errors %}
+            <span class="text-danger">{{ error }}</span>
+          {% endfor %}
+          {{ field(placeholder=field.label.text, class="form-control") }}
+        {% endfor %}
+  
+        <button class="btn btn-primary btn-lg btn-block">Sign me up!</button>
+      </form>
+
+
+
+      
     <script>
         document.getElementById("switch-form").addEventListener("click", function () {
             window.location.href = "{{ url_for('login') }}";
@@ -39,6 +58,7 @@
                 companyNameField.style.display = "none";
             } else if (userRoleSelect.value === "client") {
                 companyNameField.style.display = "block";
+                companyNameLabel.style.display = "block";
                 licenseTypeField.style.display = "none";
             } else {
                 licenseTypeField.style.display = "none";

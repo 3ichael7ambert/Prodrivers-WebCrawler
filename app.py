@@ -6,28 +6,32 @@ from wtforms.validators import DataRequired
 from flask_sqlalchemy import SQLAlchemy
 from markupsafe import escape # fixes jinja2 escape error
 import requests , random
+from flask_wtf.csrf import CSRFProtect
 
 
 from flask_debugtoolbar import DebugToolbarExtension
 
-from models import db, connect_db, Driver, Client, Dispatcher, Company, Manager, HiddenJob, User
+from models import db, connect_db, Driver, Client, Dispatcher, Company, HiddenJob, User
 from forms import LoginForm, RegisterForm, JobSearchForm, JobPostForm, JobEditForm, UserProfileForm
 
 from webcrawl import scrape_job_data
 
 from werkzeug.utils import secure_filename
 
+from config import DEBUG
+
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import joinedload
 
 CURR_USER_KEY = "curr_user"
+
 
 app = Flask(__name__)
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///driver_jobs_db'
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['SQLALCHEMY_ECHO'] = True
+app.config['SQLALCHEMY_ECHO'] = DEBUG #True
 
 app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = True
 
@@ -36,6 +40,7 @@ app.config['SECRET_KEY'] = 'SeKRuT'
 
 toolbar = DebugToolbarExtension(app)
 
+csrf = CSRFProtect(app)
 app.app_context().push()
 connect_db(app)
 db.create_all() 
@@ -120,13 +125,14 @@ def load_logged_in_user():
 
 def do_login(user):
     """Log in user."""
-    
-    user = User.query.filter_by(username=username).first()
-    if user and user.check_password(password):
-        session[CURR_USER_KEY] = user.id
-        g.user = user
-        return True
-    return False
+    session[CURR_USER_KEY] = user.id
+
+    # user = User.query.filter_by(username=username).first()
+    # if user and user.check_password(password):
+    #     session[CURR_USER_KEY] = user.id
+    #     g.user = user
+    #     return True
+    # return False
 
 def do_logout():
     """Logout user."""
@@ -143,7 +149,7 @@ def login():
     form = LoginForm()
     if form.validate_on_submit():
         # Check login credentials and authenticate user
-        
+
         # username = form.username.data
         # password = form.password.data
         # remember_me = form.remember_me.data
