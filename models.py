@@ -19,10 +19,12 @@ class User(db.Model):
     last_name = db.Column(db.String(50))
     password_hash = db.Column(db.String(), nullable=False)
     role = db.Column(db.String(50), nullable=False)
-    #license_type = db.Column(db.String(50)) 
-    #company_name = db.Column(db.String(100))  
+    license_type = db.Column(db.String(50)) 
+    company_name = db.Column(db.String(100))  
 
  
+    def __repr__(self):
+        return f"<User #{self.id}: {self.username}, {self.email}>"
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
@@ -46,15 +48,15 @@ class User(db.Model):
             first_name=first_name,
             last_name=last_name,
             role=user_role,
-            #license_type=license_type,
-            #company_name=company_name,
+            license_type=license_type,
+            company_name=company_name,
         )
 
         db.session.add(user)
         return user
 
     @classmethod
-    def authenticate(cls, username, password_hash, remember_me):
+    def authenticate(cls, username, password_hash):
         """Find user with `username` and `password`.
 
         This is a class method (call it on the class, not an individual user.)

@@ -4,26 +4,6 @@
 
 {% block content %}
     <h1>Register</h1>
-    <form id="register-form" action="{{ url_for('register') }}" method="post">
-        <!-- Register form fields -->
-        {{ form.hidden_tag() }}
-        {{ form.csrf_token() }}
-        {{ form.username.label }} {{ form.username(size=20) }}
-        {{ form.email.label }} {{ form.email(size=20) }}
-        {{ form.password_hash.label }} {{ form.password_hash(size=20) }}
-        {{ form.first_name.label }} {{ form.first_name(size=20) }}
-        {{ form.last_name.label }} {{ form.last_name(size=20) }}
-        {{ form.user_role.label }} {{ form.user_role(id="user_role") }}
-        <div id="license_type" style="display: none;">
-            {{ form.license_type.label }} {{ form.license_type() }}
-        </div>
-        <div id="company_name" style="display: none;">
-            {{ form.company_name.label }} {{ form.company_name(size=20) }}
-        </div>
-        <button type="submit">Register</button>
-    </form>
-
-    <button id="switch-form">Switch to Login</button>
 
 
 
@@ -36,34 +16,41 @@
           {% endfor %}
           {{ field(placeholder=field.label.text, class="form-control") }}
         {% endfor %}
-  
+        <div class="form-group" id="license_type_group">
+            {{ form.license_type.label(class="form-label") }}
+            {{ form.license_type(class="form-select") }}
+        </div>
+        <div class="form-group" id="company_name_group">
+            {{ form.company_name.label(class="form-label") }}
+            {{ form.company_name(class="form-control") }}
+        </div>
         <button class="btn btn-primary btn-lg btn-block">Sign me up!</button>
       </form>
+      <button id="switch-form">Switch to Login</button>
 
 
 
-      
-    <script>
+      <script>
         document.getElementById("switch-form").addEventListener("click", function () {
             window.location.href = "{{ url_for('login') }}";
         });
-
-        document.getElementById("register-form").addEventListener("change", function () {
+    
+        document.getElementById("user_form").addEventListener("change", function () {
             const userRoleSelect = document.getElementById("user_role");
-            const licenseTypeField = document.getElementById("license_type");
-            const companyNameField = document.getElementById("company_name");
-
+            const licenseTypeGroup = document.getElementById("license_type_group");
+            const companyNameGroup = document.getElementById("company_name_group");
+    
             if (userRoleSelect.value === "driver") {
-                licenseTypeField.style.display = "block";
-                companyNameField.style.display = "none";
+                licenseTypeGroup.style.display = "block";
+                companyNameGroup.style.display = "none";
             } else if (userRoleSelect.value === "client") {
-                companyNameField.style.display = "block";
-                companyNameLabel.style.display = "block";
-                licenseTypeField.style.display = "none";
+                companyNameGroup.style.display = "block";
+                licenseTypeGroup.style.display = "none";
             } else {
-                licenseTypeField.style.display = "none";
-                companyNameField.style.display = "none";
+                licenseTypeGroup.style.display = "none";
+                companyNameGroup.style.display = "none";
             }
         });
     </script>
+    
 {% endblock %}

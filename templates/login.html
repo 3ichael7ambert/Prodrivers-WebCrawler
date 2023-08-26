@@ -3,23 +3,6 @@
 {% block title %}Login{% endblock %}
 
 {% block content %}
-    <h1>Login</h1>
-    <form action="{{ url_for('login') }}" method="post">
-        {{ form.hidden_tag() }}
-        {{ form.csrf_token() }}
-        {{ form.username.label }} {{ form.username(size=20) }}
-        {{ form.password_hash.label }} {{ form.password_hash(size=20) }}
-        {{ form.remember_me }} {{ form.remember_me.label }}
-        <button type="submit">Login</button>
-    </form>s
-
-    <button id="switch-form">Switch to Register</button>
-
-    <script>
-        document.getElementById("switch-form").addEventListener("click", function () {
-            window.location.href = "{{ url_for('register') }}";
-        });
-    </script>
 
 
 <form method="POST" id="user_form">
@@ -34,4 +17,14 @@
 
     <button class="btn btn-primary btn-block btn-lg">Log in</button>
   </form>
+
+  <button id="switch-form">Switch to Register</button>
+
+
+  <script>
+    document.getElementById("switch-form").addEventListener("click", function () {
+        window.location.href = "{{ url_for('register') }}";
+    });
+</script>
+
 {% endblock %}

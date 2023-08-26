@@ -21,7 +21,7 @@ from werkzeug.utils import secure_filename
 
 from config import DEBUG
 from flask_migrate import Migrate
-
+import logging
 
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import joinedload
@@ -49,7 +49,10 @@ app.app_context().push()
 connect_db(app)
 db.create_all() 
 
+# Set up logging
+logging.basicConfig(level=logging.DEBUG)
 
+###############################################################################
 ##Random City Method
 # Make a request to the Random User Generator API
 response = requests.get('https://randomuser.me/api/?nat=us')
@@ -67,7 +70,7 @@ url = f"https://www.prodrivers.com/jobs/?_city={city_param}&_state={state_param}
 job_data = scrape_job_data(f"https://www.prodrivers.com/jobs/?_city={city_param}&_state={state_param}&_title={key_param}") 
 
 
-
+###############################################
 
 def get_job_data(url):
     response = requests.get(url)
@@ -127,16 +130,14 @@ def load_logged_in_user():
 
 
 
+
 def do_login(user):
     """Log in user."""
+    g.user = user
     session[CURR_USER_KEY] = user.id
-
-    # user = User.query.filter_by(username=username).first()
-    # if user and user.check_password(password):
-    #     session[CURR_USER_KEY] = user.id
-    #     g.user = user
-    #     return True
-    # return False
+    if g.user:
+        print(g.user)
+    return True
 
 def do_logout():
     """Logout user."""
@@ -152,37 +153,21 @@ def do_logout():
 def login():
     form = LoginForm()
     if form.validate_on_submit():
-        user = User.query.filter_by(username=form.username.data).first()
-        if user and check_password_hash(user.password_hash, form.password_hash.data):
-            user = User.authenticate(form.username.data,
-                                 form.password_hash.data,
-                                 form.remember_me.data)
-        if do_login(user):
-            flash('Login successful', 'success')
-            return redirect(url_for('dashboard'))  # Redirect to your dashboard route
-        else:
-            flash('Invalid username or password', 'danger')
+        user = User.authenticate(form.username.data,
+                                 form.password_hash.data)
+    # if form.validate_on_submit():
+    #     user = User.query.filter_by(username=form.username.data).first()
+    #     # if user and check_password_hash(user.password_hash, form.password.data):
         if user:
             do_login(user)
-            flash(f"Hello, {user.username}!", "success")
+            flash(f"Hello, {user.first_name}!", "success")
             return redirect("/")
-        if user and user.check_password(form.password_hash.data):
-            if user.role == 'driver':
-                return redirect(url_for('driver_dashboard', username=user.username))
-            elif user.role == 'client':
-                return redirect(url_for('client_dashboard', username=user.username))
-            elif user.role == 'dispatcher':
-                return redirect(url_for('dispatcher_dashboard', username=user.username))
-            elif user.role == 'manager':
-                return redirect(url_for('manager_dashboard', username=user.username))
-            else:
-                flash('Unknown user role', 'danger')
-                return redirect(url_for('home'))
-        else:
-            flash('Invalid username or password', 'danger')
-
+        # else:
+        #     flash('Invalid username or password', 'danger')
+        flash("Invalid credentials.", 'danger')
+    if g.user:
+        print(g.user)
     return render_template('login.html', form=form)
-
 
 # Route for logging out
 @app.route('/logout')
@@ -215,29 +200,32 @@ def register():
         
     form = RegisterForm()
     
-    if g.user:
-        flash('You are already registered and logged in.', 'info')
-        return redirect(url_for('home'))
-    
+    # if g.user:
+    #     flash('You are already registered and logged in.', 'info')
+    #     return redirect(url_for('home'))
+    app.logger.debug("Fetching user data...")
+    # user = User.query.get(user_id)
     if form.validate_on_submit():
         try:
             user = User.signup(
                 username=form.username.data,
-                email=form.email.data,
                 password_hash=form.password_hash.data,
+                email=form.email.data,
                 first_name=form.first_name.data,
                 last_name=form.last_name.data,
                 user_role=form.user_role.data,
                 license_type=form.license_type.data,
                 company_name=form.company_name.data,
            )
+            db.session.add(user)
             db.session.commit()
+            do_login(user)
+            return redirect("/")
+
         except IntegrityError:
             flash("Username or email already taken", 'danger')
             return render_template('register.html', form=form)
-        
-        do_login(user)
-        return redirect("/")
+    
     else:
         return render_template('register.html', form=form)
 

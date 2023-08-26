@@ -26,7 +26,7 @@
                         {% elif g.user.role == 'client' %}
                             <li><a href="{{ url_for('client_dashboard', username=g.user.username) }}">Client Dashboard</a></li>
                         {% elif g.user.role == 'dispatcher' %}
-                            <li><a href="{{ url_for('dispatcher_dashboard', username=g.user.username) }}">Dispatcher Dashboard</a></li>
+                            <li><a href="{{ url_for('dispatch_dashboard', username=g.user.username) }}">Dispatcher Dashboard</a></li>
                         {% elif g.user.role == 'manager' %}
                             <li><a href="{{ url_for('manager_dashboard', username=g.user.username) }}">Manager Dashboard</a></li>
                         {% endif %}
