@@ -7,6 +7,7 @@ from flask_sqlalchemy import SQLAlchemy
 from markupsafe import escape # fixes jinja2 escape error
 import requests , random
 from flask_wtf.csrf import CSRFProtect
+from flask_bcrypt import Bcrypt, generate_password_hash, check_password_hash
 
 
 from flask_debugtoolbar import DebugToolbarExtension
@@ -19,6 +20,8 @@ from webcrawl import scrape_job_data
 from werkzeug.utils import secure_filename
 
 from config import DEBUG
+from flask_migrate import Migrate
+
 
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import joinedload
@@ -37,6 +40,7 @@ app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = True
 
 app.config['SECRET_KEY'] = 'SeKRuT'
 
+migrate = Migrate(app, db)
 
 toolbar = DebugToolbarExtension(app)
 
@@ -148,15 +152,12 @@ def do_logout():
 def login():
     form = LoginForm()
     if form.validate_on_submit():
-        # Check login credentials and authenticate user
-
-        # username = form.username.data
-        # password = form.password.data
-        # remember_me = form.remember_me.data
-        user = User.authenticate(form.username.data,
-                                 form.password.data,
+        user = User.query.filter_by(username=form.username.data).first()
+        if user and check_password_hash(user.password_hash, form.password_hash.data):
+            user = User.authenticate(form.username.data,
+                                 form.password_hash.data,
                                  form.remember_me.data)
-        if do_login(username, password):
+        if do_login(user):
             flash('Login successful', 'success')
             return redirect(url_for('dashboard'))  # Redirect to your dashboard route
         else:
@@ -165,9 +166,7 @@ def login():
             do_login(user)
             flash(f"Hello, {user.username}!", "success")
             return redirect("/")
-        if user and user.check_password(form.password.data):
-            #login_user(user)
-            # Redirect to the appropriate dashboard based on user role
+        if user and user.check_password(form.password_hash.data):
             if user.role == 'driver':
                 return redirect(url_for('driver_dashboard', username=user.username))
             elif user.role == 'client':
@@ -194,12 +193,12 @@ def logout():
     do_logout()
     flash('You have been logged out', 'info')
     return redirect(url_for('login'))
-    if g.user:
-        do_logout()
-        flash("Successfully logged out.", "success")
-    return redirect("/login")
+    # if g.user:
+    #     do_logout()
+    #     flash("Successfully logged out.", "success")
+    # return redirect("/login")
 
-    return redirect(url_for('home'))
+    # return redirect(url_for('home'))
 
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -225,7 +224,7 @@ def register():
             user = User.signup(
                 username=form.username.data,
                 email=form.email.data,
-                password=form.password.data,
+                password_hash=form.password_hash.data,
                 first_name=form.first_name.data,
                 last_name=form.last_name.data,
                 user_role=form.user_role.data,

@@ -1,5 +1,5 @@
 from datetime import datetime
-from flask_bcrypt import Bcrypt
+from flask_bcrypt import Bcrypt, generate_password_hash, check_password_hash
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import Enum
 from sqlalchemy.orm import relationship
@@ -15,10 +15,14 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
-    password_hash = db.Column(db.String(128), nullable=False)
+    first_name = db.Column(db.String(50))
+    last_name = db.Column(db.String(50))
+    password_hash = db.Column(db.String(), nullable=False)
     role = db.Column(db.String(50), nullable=False)
-    license_type = db.Column(db.String(50)) 
-    company_name = db.Column(db.String(100))  
+    #license_type = db.Column(db.String(50)) 
+    #company_name = db.Column(db.String(100))  
+
+ 
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
@@ -33,7 +37,7 @@ class User(db.Model):
         Hashes password and adds user to system.
         """
 
-        hashed_pwd = bcrypt.generate_password_hash(password).decode('UTF-8')
+        hashed_pwd = bcrypt.generate_password_hash(password_hash).decode('UTF-8')
 
         user = User(
             username=username,
@@ -41,9 +45,9 @@ class User(db.Model):
             password_hash=hashed_pwd,
             first_name=first_name,
             last_name=last_name,
-            user_role=user_role,
-            license_type=license_type,
-            company_name=company_name,
+            role=user_role,
+            #license_type=license_type,
+            #company_name=company_name,
         )
 
         db.session.add(user)
@@ -63,7 +67,8 @@ class User(db.Model):
         user = cls.query.filter_by(username=username).first()
 
         if user:
-            is_auth = bcrypt.check_password_hash(user.password, password)
+            is_auth = bcrypt.check_password_hash(user.password_hash, password_hash)
+
             if is_auth:
                 return user
 

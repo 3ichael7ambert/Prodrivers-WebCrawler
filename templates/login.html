@@ -8,10 +8,10 @@
         {{ form.hidden_tag() }}
         {{ form.csrf_token() }}
         {{ form.username.label }} {{ form.username(size=20) }}
-        {{ form.password.label }} {{ form.password(size=20) }}
+        {{ form.password_hash.label }} {{ form.password_hash(size=20) }}
         {{ form.remember_me }} {{ form.remember_me.label }}
         <button type="submit">Login</button>
-    </form>
+    </form>s
 
     <button id="switch-form">Switch to Register</button>
 
