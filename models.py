@@ -134,15 +134,12 @@ class Dispatcher(db.Model):
 
     username = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
-    first_name = db.Column(db.Integer, db.ForeignKey('user.first_name'), primary_key=True)
-    last_name = db.Column(db.Integer, db.ForeignKey('user.last_name'), primary_key=True)
-    password_hash = db.Column(db.Integer, db.ForeignKey('user.password_hash'), primary_key=True)
-    email = db.Column(db.Integer, db.ForeignKey('user.email'), primary_key=True)
+    first_name = db.Column(db.String, db.ForeignKey('user.first_name'), primary_key=True)
+    last_name = db.Column(db.String, db.ForeignKey('user.last_name'), primary_key=True)
+    password_hash = db.Column(db.String, db.ForeignKey('user.password_hash'), primary_key=True)
+    email = db.Column(db.String, db.ForeignKey('user.email'), primary_key=True)
 
-    first_name = db.Column(db.String)
-    last_name = db.Column(db.String)
-
-    user = db.relationship('User', backref='dispatcher', uselist=False)
+    #user = db.relationship('User', backref='dispatcher', uselist=False)
 
     def __repr__(self):
         return f"<Dispatcher #{self.id}: {self.username}, {self.email}>"
@@ -176,3 +173,4 @@ def connect_db(app):
 
     db.app = app
     db.init_app(app)
+

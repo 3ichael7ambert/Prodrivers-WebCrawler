@@ -9,8 +9,10 @@
         <p><strong>Job Title:</strong> {{ current_job.title }}</p>
         <p><strong>Location:</strong> {{ current_job.location }}</p>
         <!-- Display other relevant information about the current job -->
-        <a href="{{ url_for('update_profile') }}">Update Profile</a>
-        <a href="{{ url_for('remove_job', job_id=current_job.id) }}">Remove Job</a>
+        <form method="post">
+            {{ driver_dashboard_form.update_profile }}
+            {{ driver_dashboard_form.remove_job }}
+        </form>
     {% else %}
         <p>No current job.</p>
     {% endif %}

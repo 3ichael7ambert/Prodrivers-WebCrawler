@@ -365,13 +365,15 @@ def job_search():
 
 
 
-# Route for driver dashboard
+# Route for driver dashboard using g.user
 @app.route('/driver_dashboard/<username>')
-#@login_required
 def driver_dashboard(username):
-    # Retrieve driver information based on username and display the dashboard
-    driver = Driver.query.filter_by(username=username).first()
-    return render_template('driver_dashboard.html', driver=driver)
+    if g.user:
+        driver = Driver.query.filter_by(username=username).first()
+        return render_template('drivers/driver_dashboard.html', driver=driver)
+    else:
+        return redirect(url_for('login'))  # Redirect to login if user not logged in
+
 
 # Route for dispatcher dashboard
 @app.route('/dispatch_dashboard/<username>')
@@ -379,7 +381,7 @@ def driver_dashboard(username):
 def dispatch_dashboard(username):
     # Retrieve dispatcher information based on username and display the dashboard
     dispatcher = Dispatcher.query.filter_by(username=username).first()
-    return render_template('dispatch_dashboard.html', dispatcher=dispatcher)
+    return render_template('dispatch/dispatch_dashboard.html', dispatcher=dispatcher)
 
 # Route for client dashboard
 @app.route('/client_dashboard/<username>')
@@ -387,7 +389,7 @@ def dispatch_dashboard(username):
 def client_dashboard(username):
     # Retrieve client information based on username and display the dashboard
     client = Client.query.filter_by(username=username).first()
-    return render_template('client_dashboard.html', client=client)
+    return render_template('clients/client_dashboard.html', client=client)
 
 # Route for manager dashboard
 @app.route('/manager_dashboard/<username>')

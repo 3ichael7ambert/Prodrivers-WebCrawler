@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, BooleanField, SelectField, TextAreaField
+from wtforms import StringField, PasswordField, BooleanField, SelectField, TextAreaField, SubmitField
 from wtforms.validators import DataRequired, Email, Length
 from markupsafe import escape #fixes jinja2 escape error
 from models import User
@@ -43,3 +43,17 @@ class UserProfileForm(FlaskForm):
     current_password = PasswordField('Current Password', validators=[DataRequired()])
     new_password = PasswordField('New Password')
     confirm_new_password = PasswordField('Confirm New Password')
+
+
+
+    ########################################################################################################
+class DriverDashboardForm(FlaskForm):
+    update_profile = SubmitField('Update Profile')
+    remove_job = SubmitField('Remove Job')
+
+class ClientDashboardForm(FlaskForm):
+    remove_driver = SubmitField('Remove Driver')
+    delete_job = SubmitField('Delete Job')
+
+class DispatchDashboardForm(FlaskForm):
+    pass

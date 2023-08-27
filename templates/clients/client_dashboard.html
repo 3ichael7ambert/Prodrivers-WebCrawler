@@ -13,8 +13,10 @@
                     <p><strong>Job Title:</strong> {{ job.title }}</p>
                     <p><strong>Location:</strong> {{ job.location }}</p>
                     <!-- Display other relevant information about the job -->
-                    <a href="{{ url_for('remove_driver_from_job', job_id=job.id) }}">Remove Driver</a>
-                    <a href="{{ url_for('delete_job', job_id=job.id) }}">Delete Job</a>
+                    <form method="post">
+                        {{ client_dashboard_form.remove_driver }}
+                        {{ client_dashboard_form.delete_job }}
+                    </form>
                 </li>
             {% endfor %}
         </ul>
