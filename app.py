@@ -125,7 +125,7 @@ def add_user_to_g():
 
 @app.before_request
 def load_logged_in_user():
-    user_id = session.get('user_id')
+    user_id = session.get(CURR_USER_KEY)
     g.user = User.query.get(user_id) if user_id else None
 
 
@@ -133,11 +133,9 @@ def load_logged_in_user():
 
 def do_login(user):
     """Log in user."""
-    g.user = user
+
     session[CURR_USER_KEY] = user.id
-    if g.user:
-        print(g.user)
-    return True
+
 
 def do_logout():
     """Logout user."""
@@ -153,21 +151,19 @@ def do_logout():
 def login():
     form = LoginForm()
     if form.validate_on_submit():
-        user = User.authenticate(form.username.data,
-                                 form.password_hash.data)
-    # if form.validate_on_submit():
-    #     user = User.query.filter_by(username=form.username.data).first()
-    #     # if user and check_password_hash(user.password_hash, form.password.data):
+        user = User.query.filter_by(username=form.username.data).first()
         if user:
-            do_login(user)
-            flash(f"Hello, {user.first_name}!", "success")
-            return redirect("/")
-        # else:
-        #     flash('Invalid username or password', 'danger')
-        flash("Invalid credentials.", 'danger')
-    if g.user:
-        print(g.user)
+            if user.check_password(form.password_hash.data):  # Corrected form field name
+                do_login(user)
+                flash(f"Hello, {user.first_name}!", "success")
+                return redirect("/")
+            else:
+                print("Password doesn't match")  # Debugging
+        else:
+            print("Username not found")  # Debugging
+            flash("Invalid username or password.", 'danger')
     return render_template('login.html', form=form)
+
 
 # Route for logging out
 @app.route('/logout')
@@ -178,34 +174,31 @@ def logout():
     do_logout()
     flash('You have been logged out', 'info')
     return redirect(url_for('login'))
-    # if g.user:
-    #     do_logout()
-    #     flash("Successfully logged out.", "success")
-    # return redirect("/login")
 
-    # return redirect(url_for('home'))
 
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     """Handle user signup.
 
-    Create new user and add to DB. Redirect to home page.
+    Create a new user and add to the DB. Redirect to the home page.
 
-    If form not valid, present form.
+    If the form is not valid, present the form.
 
-    If the there already is a user with that username: flash message
-    and re-present form.
+    If there is already a user with that username or email: flash message
+    and re-present the form.
     """
         
     form = RegisterForm()
-    
-    # if g.user:
-    #     flash('You are already registered and logged in.', 'info')
-    #     return redirect(url_for('home'))
+
     app.logger.debug("Fetching user data...")
-    # user = User.query.get(user_id)
+
     if form.validate_on_submit():
+
+        existing_user = User.query.filter_by(email=form.email.data).first()
+        if existing_user:
+            flash("Email already registered", 'danger')
+            return render_template('register.html', form=form)
         try:
             user = User.signup(
                 username=form.username.data,
@@ -217,16 +210,22 @@ def register():
                 license_type=form.license_type.data,
                 company_name=form.company_name.data,
            )
-            db.session.add(user)
-            db.session.commit()
-            do_login(user)
-            return redirect("/")
 
+            db.session.add(user)
+            db.session.commit()  # Commit here within the try block
+            do_login(user)
+
+            return redirect("/")
+        
         except IntegrityError:
+            db.session.rollback()  # Rollback if there's an exception
             flash("Username or email already taken", 'danger')
             return render_template('register.html', form=form)
     
     else:
+        # Handle presenting the form for GET requests
+        return render_template('register.html', form=form)
+
         return render_template('register.html', form=form)
 
 
@@ -312,6 +311,19 @@ def home():
     job_data = get_random_job_data2()
     
     return render_template('index.html', form=form, job_data=job_data)
+
+
+@app.route('/profile/<int:user_id>')
+def profile(user_id):
+    if g.user:
+        if g.user.role == 'driver':
+            return redirect(url_for('driver_dashboard', username=g.user.username))
+        elif g.user.role == 'client':
+            return redirect(url_for('client_dashboard', username=g.user.username))
+        elif g.user.role == 'dispatcher':
+            return redirect(url_for('dispatch_dashboard', username=g.user.username))
+        else:
+            return redirect(url_for('home')) 
 
 
 

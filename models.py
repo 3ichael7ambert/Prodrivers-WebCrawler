@@ -12,7 +12,7 @@ db = SQLAlchemy()
 
 class User(db.Model):
     __tablename__ = 'users'
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True,nullable=False,autoincrement=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     first_name = db.Column(db.String(50))
@@ -27,11 +27,12 @@ class User(db.Model):
         return f"<User #{self.id}: {self.username}, {self.email}>"
 
     def set_password(self, password):
-        self.password_hash = generate_password_hash(password)
+        self.password_hash = generate_password_hash(password).decode('UTF-8')
+
 
     def check_password(self, password):
-        return check_password_hash(self.password_hash, password)
-    
+        return bcrypt.check_password_hash(self.password_hash, password)
+
     @classmethod
     def signup(cls, username, email, password_hash, first_name, last_name, user_role, license_type=None, company_name=None):
         """Sign up user.
@@ -40,7 +41,6 @@ class User(db.Model):
         """
 
         hashed_pwd = bcrypt.generate_password_hash(password_hash).decode('UTF-8')
-
         user = User(
             username=username,
             email=email,
@@ -86,6 +86,11 @@ class Driver(db.Model):
     __tablename__ = 'drivers'
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
+    first_name = db.Column(db.Integer, db.ForeignKey('user.first_name'), primary_key=True)
+    last_name = db.Column(db.Integer, db.ForeignKey('user.last_name'), primary_key=True)
+    password_hash = db.Column(db.Integer, db.ForeignKey('user.password_hash'), primary_key=True)
+    email = db.Column(db.Integer, db.ForeignKey('user.email'), primary_key=True)
+    username = db.Column(db.Integer, db.ForeignKey('user.username'), primary_key=True)
     otherJobDetails = db.Column(db.String)
     companyID = db.Column(db.String)
     driverType = db.Column(db.String)
@@ -102,7 +107,14 @@ class DriverJob(db.Model):
 class Client(db.Model):
     __tablename__ = 'clients'
     id = db.Column(db.Integer, primary_key=True)
+    
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
+    first_name = db.Column(db.Integer, db.ForeignKey('user.first_name'), primary_key=True)
+    last_name = db.Column(db.Integer, db.ForeignKey('user.last_name'), primary_key=True)
+    password_hash = db.Column(db.Integer, db.ForeignKey('user.password_hash'), primary_key=True)
+    email = db.Column(db.Integer, db.ForeignKey('user.email'), primary_key=True)
+    username = db.Column(db.Integer, db.ForeignKey('user.username'), primary_key=True)
+
     otherJobDetails = db.Column(db.String)
     jobs = db.relationship('Job', back_populates='client')
 
@@ -119,9 +131,16 @@ class Job(db.Model):
 class Dispatcher(db.Model):
     __tablename__ = 'dispatchers'
     id = db.Column(db.Integer, primary_key=True)
+
+    username = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
-    firstName = db.Column(db.String)
-    lastName = db.Column(db.String)
+    first_name = db.Column(db.Integer, db.ForeignKey('user.first_name'), primary_key=True)
+    last_name = db.Column(db.Integer, db.ForeignKey('user.last_name'), primary_key=True)
+    password_hash = db.Column(db.Integer, db.ForeignKey('user.password_hash'), primary_key=True)
+    email = db.Column(db.Integer, db.ForeignKey('user.email'), primary_key=True)
+
+    first_name = db.Column(db.String)
+    last_name = db.Column(db.String)
 
 class Company(db.Model):
     __tablename__ = 'companies'
