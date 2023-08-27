@@ -4,5 +4,21 @@
 
 {% block content %}
     <h1>Welcome, {{ client_name }}</h1>
-    <!-- relevant client info -->
+ 
+    <h2>All Jobs:</h2>
+    {% if all_jobs %}
+        <ul>
+            {% for job in all_jobs %}
+                <li>
+                    <p><strong>Job Title:</strong> {{ job.title }}</p>
+                    <p><strong>Location:</strong> {{ job.location }}</p>
+                    <!-- Display other relevant information about the job -->
+                    <a href="{{ url_for('remove_driver_from_job', job_id=job.id) }}">Remove Driver</a>
+                    <a href="{{ url_for('delete_job', job_id=job.id) }}">Delete Job</a>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No jobs available.</p>
+    {% endif %}
 {% endblock %}

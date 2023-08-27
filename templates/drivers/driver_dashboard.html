@@ -4,5 +4,14 @@
 
 {% block content %}
     <h1>Welcome, {{ driver_name }}</h1>
-    <!-- relevant driver information-->
+    <h2>Current Job:</h2>
+    {% if current_job %}
+        <p><strong>Job Title:</strong> {{ current_job.title }}</p>
+        <p><strong>Location:</strong> {{ current_job.location }}</p>
+        <!-- Display other relevant information about the current job -->
+        <a href="{{ url_for('update_profile') }}">Update Profile</a>
+        <a href="{{ url_for('remove_job', job_id=current_job.id) }}">Remove Job</a>
+    {% else %}
+        <p>No current job.</p>
+    {% endif %}
 {% endblock %}

@@ -142,6 +142,11 @@ class Dispatcher(db.Model):
     first_name = db.Column(db.String)
     last_name = db.Column(db.String)
 
+    user = db.relationship('User', backref='dispatcher', uselist=False)
+
+    def __repr__(self):
+        return f"<Dispatcher #{self.id}: {self.username}, {self.email}>"
+
 class Company(db.Model):
     __tablename__ = 'companies'
     id = db.Column(db.Integer, primary_key=True)

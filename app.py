@@ -108,7 +108,7 @@ state_abbreviations = ["AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "FL", "GA
 
 
 
-##############################################################################
+################################################################################################################################################################################################
 # User signup/login/logout
 
 
@@ -231,7 +231,7 @@ def register():
 
 
 
-##############################################################################
+################################################################################################################################################################################################
 # General user routes:
 
 
@@ -271,6 +271,8 @@ def get_random_job_data():
     else:
         return []
 
+
+##################################################################################################################################################################################################
 
 # Route for home page (job board)
 @app.route('/')
@@ -395,6 +397,8 @@ def manager_dashboard(username):
     manager = Manager.query.filter_by(username=username).first()
     return render_template('manager_dashboard.html', client=client)
 
+##################################################################################################################################################################################
+#JOB LOGIC
 
 # Route for posting a new job
 @app.route('/post_job', methods=['GET', 'POST'])
@@ -427,9 +431,33 @@ def edit_job(job_id):
 
 
 
+@app.route('/accept_job/<int:job_id>')
+def accept_job(job_id):
+    # Logic to mark the job as accepted by the driver
+    # For example, update the database to set the driver_id for the job
+    # You can also perform other necessary tasks
+    return redirect(url_for('driver_dashboard'))
 
+@app.route('/update_profile')
+def update_profile():
+    # Logic to update the driver's profile
+    # You can also perform other necessary tasks
+    return redirect(url_for('driver_dashboard'))
 
+@app.route('/remove_job/<int:job_id>')
+def remove_job(job_id):
+    # Logic to remove the job from the driver's current job
+    # You can also perform other necessary tasks
+    return redirect(url_for('driver_dashboard'))
 
+@app.route('/delete_job/<int:job_id>')
+def delete_job(job_id):
+    # Logic to delete a job (this should cascade and remove from drivers too)
+    # You can also perform other necessary tasks
+    return redirect(url_for('client_dashboard'))
+
+##################################################################################################################################################################################
+#NAV
 
 @app.route('/about')
 def about():
@@ -446,6 +474,10 @@ def contact():
     form = LoginForm()
     return render_template('contact.html', form=form)
 
+
+
+
+###########################################################################################################################################################################
 
 if __name__ == '__main__':
     with app.app_context():
