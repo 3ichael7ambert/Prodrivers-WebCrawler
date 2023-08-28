@@ -119,8 +119,8 @@ class Client(db.Model):
     password_hash = db.Column(db.Integer, db.ForeignKey('user.password_hash'), primary_key=True)
     email = db.Column(db.Integer, db.ForeignKey('user.email'), primary_key=True)
     username = db.Column(db.Integer, db.ForeignKey('user.username'), primary_key=True)
-
-    otherJobDetails = db.Column(db.String)
+    company_id = db.Column(db.Integer, db.ForeignKey('companies.id'))
+    other_job_details = db.Column(db.String)
     jobs = db.relationship('Job', back_populates='client')
 
 class Job(db.Model):
