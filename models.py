@@ -20,7 +20,8 @@ class User(db.Model):
     password_hash = db.Column(db.String(), nullable=False)
     role = db.Column(db.String(50), nullable=False)
     license_type = db.Column(db.String(50)) 
-    company_name = db.Column(db.String(100))  
+    company_name = db.Column(db.String(100)) 
+ 
 
  
     def __repr__(self):
@@ -91,11 +92,15 @@ class Driver(db.Model):
     password_hash = db.Column(db.Integer, db.ForeignKey('user.password_hash'), primary_key=True)
     email = db.Column(db.Integer, db.ForeignKey('user.email'), primary_key=True)
     username = db.Column(db.Integer, db.ForeignKey('user.username'), primary_key=True)
-    otherJobDetails = db.Column(db.String)
-    companyID = db.Column(db.String)
-    driverType = db.Column(db.String)
-    currentAvailability = db.Column(db.String)
-    isAssigned = db.Column(db.Boolean)
+    other_job_details = db.Column(db.String)
+    #companyID = db.Column(db.Integer, db.ForeignKey('companies.id'))    
+    company_id = db.Column(db.Integer, db.ForeignKey('companies.id'))
+    driver_type = db.Column(db.String)
+    current_availability = db.Column(db.String)
+    is_assigned = db.Column(db.Boolean)
+    current_job = db.Column(db.Integer, db.ForeignKey('job.id'), primary_key=True)
+
+    
 
 class DriverJob(db.Model):
     __tablename__ = 'driver_job'

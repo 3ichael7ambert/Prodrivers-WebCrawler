@@ -13,7 +13,7 @@ from flask_bcrypt import Bcrypt, generate_password_hash, check_password_hash
 from flask_debugtoolbar import DebugToolbarExtension
 
 from models import db, connect_db, Driver, Client, Dispatcher, Company, HiddenJob, User
-from forms import LoginForm, RegisterForm, JobSearchForm, JobPostForm, JobEditForm, UserProfileForm
+from forms import LoginForm, RegisterForm, JobSearchForm, JobPostForm, JobEditForm, UserProfileForm, DriverDashboardForm, ClientDashboardForm, DispatchDashboardForm
 
 from webcrawl import scrape_job_data
 
@@ -368,6 +368,7 @@ def job_search():
 # Route for driver dashboard using g.user
 @app.route('/driver_dashboard/<username>')
 def driver_dashboard(username):
+    form = DriverDashboardForm()
     if g.user:
         driver = Driver.query.filter_by(username=username).first()
         return render_template('drivers/driver_dashboard.html', driver=driver)
@@ -379,6 +380,7 @@ def driver_dashboard(username):
 @app.route('/dispatch_dashboard/<username>')
 #@login_required
 def dispatch_dashboard(username):
+    form = DispatchDashboardForm()
     # Retrieve dispatcher information based on username and display the dashboard
     dispatcher = Dispatcher.query.filter_by(username=username).first()
     return render_template('dispatch/dispatch_dashboard.html', dispatcher=dispatcher)
@@ -387,6 +389,7 @@ def dispatch_dashboard(username):
 @app.route('/client_dashboard/<username>')
 #@login_required
 def client_dashboard(username):
+    form = ClientDashboardForm()
     # Retrieve client information based on username and display the dashboard
     client = Client.query.filter_by(username=username).first()
     return render_template('clients/client_dashboard.html', client=client)
@@ -395,6 +398,7 @@ def client_dashboard(username):
 @app.route('/manager_dashboard/<username>')
 #@login_required
 def manager_dashboard(username):
+    form = LoginForm()
     # Retrieve client information based on username and display the dashboard
     manager = Manager.query.filter_by(username=username).first()
     return render_template('manager_dashboard.html', client=client)
@@ -436,9 +440,8 @@ def edit_job(job_id):
 @app.route('/accept_job/<int:job_id>')
 def accept_job(job_id):
     # Logic to mark the job as accepted by the driver
-    # For example, update the database to set the driver_id for the job
-    # You can also perform other necessary tasks
-    return redirect(url_for('driver_dashboard'))
+    return redirect(url_for('driver_dashboard', username=username))
+
 
 @app.route('/update_profile')
 def update_profile():
@@ -449,13 +452,13 @@ def update_profile():
 @app.route('/remove_job/<int:job_id>')
 def remove_job(job_id):
     # Logic to remove the job from the driver's current job
-    # You can also perform other necessary tasks
+    # 
     return redirect(url_for('driver_dashboard'))
 
 @app.route('/delete_job/<int:job_id>')
 def delete_job(job_id):
     # Logic to delete a job (this should cascade and remove from drivers too)
-    # You can also perform other necessary tasks
+    # 
     return redirect(url_for('client_dashboard'))
 
 ##################################################################################################################################################################################

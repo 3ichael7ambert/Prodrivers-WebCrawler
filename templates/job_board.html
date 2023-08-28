@@ -42,7 +42,8 @@
                         <li>{{ duty }}</li>
                     {% endfor %}
                 </ul>
-                <a href="{{ url_for('accept_job', job_id=job.id) }}">Accept Job</a>
+                <a href="{{ url_for('accept_job', job_id=loop.index) }}">Accept Job</a>
+
             </li>
         {% endfor %}
     </ul>
