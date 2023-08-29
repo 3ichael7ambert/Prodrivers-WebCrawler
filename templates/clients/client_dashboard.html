@@ -23,4 +23,9 @@
     {% else %}
         <p>No jobs available.</p>
     {% endif %}
+
+    <form method="get" action="{{ url_for('add_job') }}">
+        <button type="submit">Add New Job</button>
+    </form>
+    
 {% endblock %}

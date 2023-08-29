@@ -408,17 +408,20 @@ def manager_dashboard(username):
 
 # Route for posting a new job
 @app.route('/post_job', methods=['GET', 'POST'])
-def post_job():
+def add_job():
     if request.method == 'POST':
         # Process the form data and save the new job to the database
         job_title = request.form['job_title']
         job_description = request.form['job_description']
+        job_location = request.form['job_location']
         # Save the job to the database using SQLAlchemy
 
         # After saving, redirect to the job board to see the updated list of jobs
         return redirect(url_for('job_board'))
 
-    return render_template('post_job.html')
+    return render_template('clients/post_job.html')
+
+
 
 # Route for editing a job
 @app.route('/edit_job/<job_id>', methods=['GET', 'POST'])
