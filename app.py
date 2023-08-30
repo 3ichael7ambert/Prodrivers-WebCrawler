@@ -464,7 +464,7 @@ def accept_job(job_id, username):
         return redirect(url_for('driver_dashboard', username=username))
 
     # Get the job based on the job_id
-    job = Job.query.get(job_id)
+    job = HiddenJob.query.get(job_id)
 
     if not job:
         flash('Job not found', 'danger')
@@ -484,6 +484,7 @@ def accept_job(job_id, username):
 
     flash('Job accepted successfully', 'success')
     return redirect(url_for('driver_dashboard', username=username))
+
 
 
 
