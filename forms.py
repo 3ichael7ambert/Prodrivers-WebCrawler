@@ -1,9 +1,16 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, BooleanField, SelectField, TextAreaField, SubmitField, SelectMultipleField
+from wtforms import StringField, PasswordField, BooleanField, SelectField, TextAreaField, SubmitField, DecimalField
 from wtforms.validators import DataRequired, Email, Length
+from wtforms.widgets import CheckboxInput, ListWidget
+from wtforms.fields import FieldList
+
 from markupsafe import escape #fixes jinja2 escape error
 from models import User
 
+#######################################################################################################################
+
+
+#######################################################################################################################
 class LoginForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired()])
     password_hash = PasswordField('Password', validators=[Length(min=6)])
@@ -29,10 +36,6 @@ class JobSearchForm(FlaskForm):
     state = StringField('State')
     keyword = StringField('Keyword')
 
-from flask_wtf import FlaskForm
-from wtforms import StringField, TextAreaField, SelectField, DecimalField, BooleanField
-from wtforms.validators import DataRequired
-
 class JobPostForm(FlaskForm):
     job_title = StringField('Job Title', validators=[DataRequired()])
     job_description = TextAreaField('Job Description', validators=[DataRequired()])
@@ -46,14 +49,13 @@ class JobPostForm(FlaskForm):
         ('class_c', 'Class C'), 
         ('non_cdl', 'Non-CDL')
     ], validators=[DataRequired()])
-    endorsements = SelectMultipleField('Required Endorsements', choices=[
-        ('tanker', 'Tanker Endorsement'),
-        ('hazmat', 'Hazmat Endorsement'),
-        ('doubles_triples', 'Doubles/Triples Endorsement'),
-        ('passenger', 'Passenger Endorsement')
-    ])
-    job_schedule = StringField('Job Schedule', validators=[DataRequired()])
-
+    # endorsements = MultiCheckboxField('Required Endorsements', choices=[
+    #     ('tanker', 'Tanker Endorsement'),
+    #     ('hazmat', 'Hazmat Endorsement'),
+    #     ('doubles_triples', 'Doubles/Triples Endorsement'),
+    #     ('passenger', 'Passenger Endorsement')
+    # ])
+    # job_schedule = StringField('Job Schedule', validators=[DataRequired()])
 
 class JobEditForm(FlaskForm):
     job_title = StringField('Job Title', validators=[DataRequired()])

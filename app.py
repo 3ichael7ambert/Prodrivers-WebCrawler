@@ -426,8 +426,8 @@ def add_job():
         job_city = form.job_city.data
         job_payrate = form.job_payrate.data
         job_class = form.job_class.data
-        endorsements = form.endorsements.data
-        job_schedule = form.job_schedule.data
+        # endorsements = form.endorsements.data
+        # job_schedule = form.job_schedule.data
         
         flash('Job successfully posted.', 'success')
         return redirect(url_for('job_board'))

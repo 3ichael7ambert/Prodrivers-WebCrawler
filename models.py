@@ -133,7 +133,7 @@ class Job(db.Model):
     jobCity = db.Column(db.String, nullable=False)
     jobRateOfPay = db.Column(db.String, nullable=False)
     jobClass = db.Column(db.String, nullable=False)
-    endorsements = db.Column(db.String)  # Storing endorsements as a comma-separated string
+    # endorsements = db.Column(db.String)  # Storing endorsements as a comma-separated string
     jobSchedule = db.Column(db.String)  # Store start and end times as a formatted string
     client_id = db.Column(db.Integer, db.ForeignKey('clients.id')) 
     client = db.relationship('Client', back_populates='jobs')

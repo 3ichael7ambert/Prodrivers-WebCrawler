@@ -29,19 +29,7 @@
         <label for="job_class">Class:</label>
         {{ form.job_class(class="form-control") }}<br>
 
-        <label>Required Endorsements:</label><br>
-        {{ form.endorsements(class="form-check-input", value="tanker") }}
-        <label for="endorsements_tanker">Tanker Endorsement</label><br>
-        {{ form.endorsements(class="form-check-input", value="hazmat") }}
-        <label for="endorsements_hazmat">Hazmat Endorsement</label><br>
-        {{ form.endorsements(class="form-check-input", value="doubles_triples") }}
-        <label for="endorsements_doubles_triples">Doubles/Triples Endorsement</label><br>
-        {{ form.endorsements(class="form-check-input", value="passenger") }}
-        <label for="endorsements_passenger">Passenger Endorsement</label><br>
-
-        <label for="job_schedule">Job Schedule (Start and End Times):</label><br>
-        <input type="text" id="job_schedule" name="job_schedule" placeholder="Sun: 9 AM - 5 PM, Mon: 8 AM - 4 PM" required value="{{ form.job_schedule.data }}"><br>
-
+   
         <button type="submit">Post Job</button>
     </form>
 {% endblock %}
