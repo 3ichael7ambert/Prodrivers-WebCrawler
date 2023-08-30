@@ -126,15 +126,13 @@ class Client(db.Model):
 class Job(db.Model):
     __tablename__ = 'job'
     id = db.Column(db.Integer, primary_key=True)
-    jobName = db.Column(db.String, nullable=False)
-    jobDescription = db.Column(db.String, nullable=False)
-    jobDuties = db.Column(db.String, nullable=False)  # Storing bullet points as a comma-separated string
-    jobState = db.Column(db.String, nullable=False)
-    jobCity = db.Column(db.String, nullable=False)
-    jobRateOfPay = db.Column(db.String, nullable=False)
-    jobClass = db.Column(db.String, nullable=False)
-    # endorsements = db.Column(db.String)  # Storing endorsements as a comma-separated string
-    jobSchedule = db.Column(db.String)  # Store start and end times as a formatted string
+    job_title= db.Column(db.String, nullable=False)
+    job_description = db.Column(db.String, nullable=False)
+    job_duties = db.Column(db.String, nullable=False)  # Storing bullet points as a comma-separated string
+    job_state = db.Column(db.String, nullable=False, default='default_state')    
+    job_city = db.Column(db.String, nullable=False)
+    job_payrate = db.Column(db.String, nullable=False)
+    job_class = db.Column(db.String, nullable=False)
     client_id = db.Column(db.Integer, db.ForeignKey('clients.id')) 
     client = db.relationship('Client', back_populates='jobs')
     driver_id= db.Column(db.Integer, db.ForeignKey('drivers.id')) 

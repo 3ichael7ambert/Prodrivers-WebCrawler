@@ -12,7 +12,7 @@ from flask_bcrypt import Bcrypt, generate_password_hash, check_password_hash
 
 from flask_debugtoolbar import DebugToolbarExtension
 
-from models import db, connect_db, Driver, Client, Dispatcher, Company, HiddenJob, User
+from models import db, connect_db, Driver, Client, Dispatcher, Company, HiddenJob, User, Job
 from forms import LoginForm, RegisterForm, JobSearchForm, JobPostForm, JobEditForm, UserProfileForm, DriverDashboardForm, ClientDashboardForm, DispatchDashboardForm
 
 from webcrawl import scrape_job_data
@@ -226,7 +226,7 @@ def register():
         # Handle presenting the form for GET requests
         return render_template('register.html', form=form)
 
-        return render_template('register.html', form=form)
+      
 
 
 
@@ -418,7 +418,6 @@ def add_job():
     form = JobPostForm()
 
     if form.validate_on_submit():
-
         job_title = form.job_title.data
         job_description = form.job_description.data
         job_duties = form.job_duties.data
@@ -426,17 +425,28 @@ def add_job():
         job_city = form.job_city.data
         job_payrate = form.job_payrate.data
         job_class = form.job_class.data
-        # endorsements = form.endorsements.data
-        # job_schedule = form.job_schedule.data
-        
+
+
+        new_job = Job(
+            job_title=job_title,
+            job_description=job_description,
+            job_duties=job_duties,
+            job_state=job_state,
+            job_city=job_city,
+            job_payrate=job_payrate,
+            job_class=job_class,
+            
+        )
+
+        db.session.add(new_job)
+        db.session.commit()
+
         flash('Job successfully posted.', 'success')
         return redirect(url_for('job_board'))
     else:
         flash('Form validation failed. Please check your input.', 'danger')
 
     return render_template('clients/post_job.html', form=form)
-
-
 
 
 # Route for editing a job
