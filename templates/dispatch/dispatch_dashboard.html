@@ -3,37 +3,59 @@
 {% block title %}Dispatcher Dashboard{% endblock %}
 
 {% block content %}
-    <h1>Welcome, {{ first_name }}</h1>
-    <h2>All Jobs:</h2>
-    <ul>
-        {% for job in all_jobs %}
-            <li>{{ job.jobName }} - {{ job.jobDescription }}</li>
-        {% endfor %}
-    </ul>
+    <!-- Add buttons to trigger section visibility -->
+    <button id="allJobsBtn">Show All Jobs</button>
+    <button id="jobsByCompanyBtn">Show Jobs by Company</button>
+    <button id="driversWithoutJobsBtn">Show Drivers Without Jobs</button>
+    <button id="emptyJobsWithoutDriverBtn">Show Empty Jobs Without Driver</button>
+
+    <!-- Add sections with dynamic IDs -->
+    <div id="allJobsSection" class="dashboard-section">
+        <!-- Content for All Jobs section -->
+        ...
+    </div>
     
-    <h2>Jobs by Company:</h2>
-    <ul>
-        {% for company, jobs in jobs_by_company.items() %}
-            <li>{{ company }}</li>
-            <ul>
-                {% for job in jobs %}
-                    <li>{{ job.jobName }} - {{ job.jobDescription }}</li>
-                {% endfor %}
-            </ul>
-        {% endfor %}
-    </ul>
+    <div id="jobsByCompanySection" class="dashboard-section">
+        <!-- Content for Jobs by Company section -->
+        ...
+    </div>
     
-    <h2>Drivers Without Jobs:</h2>
-    <ul>
-        {% for driver in drivers_without_jobs %}
-            <li>{{ driver.name }}</li>
-        {% endfor %}
-    </ul>
+    <div id="driversWithoutJobsSection" class="dashboard-section">
+        <!-- Content for Drivers Without Jobs section -->
+        ...
+    </div>
     
-    <h2>Empty Jobs Without Driver:</h2>
-    <ul>
-        {% for job in empty_jobs_without_driver %}
-            <li>{{ job.jobName }}</li>
-        {% endfor %}
-    </ul>
+    <div id="emptyJobsWithoutDriverSection" class="dashboard-section">
+        <!-- Content for Empty Jobs Without Driver section -->
+        ...
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            // Hide all sections initially
+            $(".dashboard-section").hide();
+
+            // Show the selected section when a button is clicked
+            $("#allJobsBtn").click(function () {
+                $(".dashboard-section").hide();
+                $("#allJobsSection").show();
+            });
+
+            $("#jobsByCompanyBtn").click(function () {
+                $(".dashboard-section").hide();
+                $("#jobsByCompanySection").show();
+            });
+
+            $("#driversWithoutJobsBtn").click(function () {
+                $(".dashboard-section").hide();
+                $("#driversWithoutJobsSection").show();
+            });
+
+            $("#emptyJobsWithoutDriverBtn").click(function () {
+                $(".dashboard-section").hide();
+                $("#emptyJobsWithoutDriverSection").show();
+            });
+        });
+    </script>
 {% endblock %}

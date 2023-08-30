@@ -137,6 +137,7 @@ class Job(db.Model):
     jobSchedule = db.Column(db.String)  # Store start and end times as a formatted string
     client_id = db.Column(db.Integer, db.ForeignKey('clients.id')) 
     client = db.relationship('Client', back_populates='jobs')
+    driver_id= db.Column(db.Integer, db.ForeignKey('drivers.id')) 
 
 
 class Dispatcher(db.Model):

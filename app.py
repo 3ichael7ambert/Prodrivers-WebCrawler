@@ -387,9 +387,11 @@ def dispatch_dashboard(username):
     return render_template(
         'dispatch/dispatch_dashboard.html',
         dispatcher=dispatcher,
-        jobs_by_company=jobs_by_company  # Pass the variable to the template
+        all_jobs=all_jobs,
+        jobs_by_company=jobs_by_company,
+        drivers_without_jobs=drivers_without_jobs,
+        empty_jobs_without_driver=empty_jobs_without_driver
     )
-
 # Route for client dashboard
 @app.route('/client_dashboard/<username>')
 #@login_required
