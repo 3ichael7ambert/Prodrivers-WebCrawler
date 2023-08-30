@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, BooleanField, SelectField, TextAreaField, SubmitField
+from wtforms import StringField, PasswordField, BooleanField, SelectField, TextAreaField, SubmitField, SelectMultipleField
 from wtforms.validators import DataRequired, Email, Length
 from markupsafe import escape #fixes jinja2 escape error
 from models import User
@@ -29,21 +29,31 @@ class JobSearchForm(FlaskForm):
     state = StringField('State')
     keyword = StringField('Keyword')
 
+from flask_wtf import FlaskForm
+from wtforms import StringField, TextAreaField, SelectField, DecimalField, BooleanField
+from wtforms.validators import DataRequired
+
 class JobPostForm(FlaskForm):
     job_title = StringField('Job Title', validators=[DataRequired()])
     job_description = TextAreaField('Job Description', validators=[DataRequired()])
     job_duties = StringField('Job Duties', validators=[DataRequired()])
     job_state = StringField('State', validators=[DataRequired()])
     job_city = StringField('City', validators=[DataRequired()])
-    job_payrate = StringField('Pay Rate', validators=[DataRequired()])
+    job_payrate = DecimalField('Pay Rate ($)', validators=[DataRequired()])
     job_class = SelectField('Class', choices=[
         ('class_a', 'Class A'), 
         ('class_b', 'Class B'), 
         ('class_c', 'Class C'), 
         ('non_cdl', 'Non-CDL')
     ], validators=[DataRequired()])
-    endorsements = StringField('Required Endorsements')
+    endorsements = SelectMultipleField('Required Endorsements', choices=[
+        ('tanker', 'Tanker Endorsement'),
+        ('hazmat', 'Hazmat Endorsement'),
+        ('doubles_triples', 'Doubles/Triples Endorsement'),
+        ('passenger', 'Passenger Endorsement')
+    ])
     job_schedule = StringField('Job Schedule', validators=[DataRequired()])
+
 
 class JobEditForm(FlaskForm):
     job_title = StringField('Job Title', validators=[DataRequired()])

@@ -143,7 +143,7 @@ class Dispatcher(db.Model):
     __tablename__ = 'dispatchers'
     id = db.Column(db.Integer, primary_key=True)
 
-    username = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
+    username = db.Column(db.Integer, db.ForeignKey('user.username'), primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
     first_name = db.Column(db.String, db.ForeignKey('user.first_name'), primary_key=True)
     last_name = db.Column(db.String, db.ForeignKey('user.last_name'), primary_key=True)

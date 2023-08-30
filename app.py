@@ -382,8 +382,13 @@ def driver_dashboard(username):
 def dispatch_dashboard(username):
     form = DispatchDashboardForm()
     # Retrieve dispatcher information based on username and display the dashboard
+    jobs_by_company = {} 
     dispatcher = Dispatcher.query.filter_by(username=username).first()
-    return render_template('dispatch/dispatch_dashboard.html', dispatcher=dispatcher)
+    return render_template(
+        'dispatch/dispatch_dashboard.html',
+        dispatcher=dispatcher,
+        jobs_by_company=jobs_by_company  # Pass the variable to the template
+    )
 
 # Route for client dashboard
 @app.route('/client_dashboard/<username>')
@@ -421,7 +426,8 @@ def add_job():
         job_class = form.job_class.data
         endorsements = form.endorsements.data
         job_schedule = form.job_schedule.data
-
+        
+        flash('Job successfully posted.', 'success')
         return redirect(url_for('job_board'))
     else:
         flash('Form validation failed. Please check your input.', 'danger')
@@ -448,10 +454,37 @@ def edit_job(job_id):
 
 
 
-@app.route('/accept_job/<int:job_id>')
-def accept_job(job_id):
-    # Logic to mark the job as accepted by the driver
+@app.route('/accept_job/<int:job_id>/<username>')
+def accept_job(job_id, username):
+    # Get the driver based on the username
+    driver = Driver.query.filter_by(username=username).first()
+
+    if not driver:
+        flash('Driver not found', 'danger')
+        return redirect(url_for('driver_dashboard', username=username))
+
+    # Get the job based on the job_id
+    job = Job.query.get(job_id)
+
+    if not job:
+        flash('Job not found', 'danger')
+        return redirect(url_for('driver_dashboard', username=username))
+
+    # Update the job's driver and availability status
+    job.current_availability = 'Accepted'
+    job.is_assigned = True
+    job.current_job = driver.id
+
+    # Add the job to the driver's jobs
+    driver_jobs = DriverJob(driver_id=driver.id, job_id=job.id)
+    db.session.add(driver_jobs)
+
+    # Commit the changes to the database
+    db.session.commit()
+
+    flash('Job accepted successfully', 'success')
     return redirect(url_for('driver_dashboard', username=username))
+
 
 
 @app.route('/update_profile')

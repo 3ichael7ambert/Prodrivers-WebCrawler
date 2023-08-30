@@ -5,14 +5,35 @@
 {% block content %}
     <h1>Welcome, {{ first_name }}</h1>
     <h2>All Jobs:</h2>
-    <!-- Display all jobs and their details -->
+    <ul>
+        {% for job in all_jobs %}
+            <li>{{ job.jobName }} - {{ job.jobDescription }}</li>
+        {% endfor %}
+    </ul>
     
     <h2>Jobs by Company:</h2>
-    <!-- Display jobs by company -->
+    <ul>
+        {% for company, jobs in jobs_by_company.items() %}
+            <li>{{ company }}</li>
+            <ul>
+                {% for job in jobs %}
+                    <li>{{ job.jobName }} - {{ job.jobDescription }}</li>
+                {% endfor %}
+            </ul>
+        {% endfor %}
+    </ul>
     
     <h2>Drivers Without Jobs:</h2>
-    <!-- Display drivers without jobs -->
+    <ul>
+        {% for driver in drivers_without_jobs %}
+            <li>{{ driver.name }}</li>
+        {% endfor %}
+    </ul>
     
     <h2>Empty Jobs Without Driver:</h2>
-    <!-- Display empty jobs without drivers -->
+    <ul>
+        {% for job in empty_jobs_without_driver %}
+            <li>{{ job.jobName }}</li>
+        {% endfor %}
+    </ul>
 {% endblock %}
