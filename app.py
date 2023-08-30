@@ -406,20 +406,28 @@ def manager_dashboard(username):
 ##################################################################################################################################################################################
 #JOB LOGIC
 
-# Route for posting a new job
 @app.route('/post_job', methods=['GET', 'POST'])
 def add_job():
-    if request.method == 'POST':
-        # Process the form data and save the new job to the database
-        job_title = request.form['job_title']
-        job_description = request.form['job_description']
-        job_location = request.form['job_location']
-        # Save the job to the database using SQLAlchemy
+    form = JobPostForm()
 
-        # After saving, redirect to the job board to see the updated list of jobs
+    if form.validate_on_submit():
+
+        job_title = form.job_title.data
+        job_description = form.job_description.data
+        job_duties = form.job_duties.data
+        job_state = form.job_state.data
+        job_city = form.job_city.data
+        job_payrate = form.job_payrate.data
+        job_class = form.job_class.data
+        endorsements = form.endorsements.data
+        job_schedule = form.job_schedule.data
+
         return redirect(url_for('job_board'))
+    else:
+        flash('Form validation failed. Please check your input.', 'danger')
 
-    return render_template('clients/post_job.html')
+    return render_template('clients/post_job.html', form=form)
+
 
 
 

@@ -7,45 +7,40 @@
     <h1>Post a New Job</h1>
     <form action="{{ url_for('add_job') }}" method="post">
         <label for="job_title">Job Title:</label>
-        <input type="text" id="job_title" name="job_title" required><br>
+        <input type="text" id="job_title" name="job_title" required value="{{ form.job_title.data }}"><br>
+
 
         <label for="job_description">Job Description:</label><br>
-        <textarea id="job_description" name="job_description" rows="4" cols="50" required></textarea><br>
-
-        <label for="job_location">Job Location:</label>
-        <input type="text" id="job_location" name="job_location" required><br>
+        <textarea id="job_description" name="job_description" rows="4" cols="50" required>{{ form.job_description.data }}</textarea><br>
 
         <label for="job_duties">Job Duties (Bullet Points, separated by commas):</label><br>
-        <input type="text" id="job_duties" name="job_duties" required><br>
+        <input type="text" id="job_duties" name="job_duties" required value="{{ form.job_duties.data }}"><br>
 
         <label for="job_state">State:</label>
-        <input type="text" id="job_state" name="job_state" required><br>
+        <input type="text" id="job_state" name="job_state" required value="{{ form.job_state.data }}"><br>
 
         <label for="job_city">City:</label>
-        <input type="text" id="job_city" name="job_city" required><br>
+        <input type="text" id="job_city" name="job_city" required value="{{ form.job_city.data }}"><br>
 
         <label for="job_payrate">Pay Rate:</label>
-        <input type="text" id="job_payrate" name="job_payrate" required><br>
+        <input type="text" id="job_payrate" name="job_payrate" required value="{{ form.job_payrate.data }}"><br>
 
         <label for="job_class">Class:</label>
-        <select id="job_class" name="job_class">
-            <option value="class_a">Class A</option>
-            <option value="class_b">Class B</option>
-            <option value="class_c">Class C</option>
-            <option value="non_cdl">Non-CDL</option>
-        </select><br>
-
+        {{ form.job_class(class="form-control") }}<br>
+        
         <label>Required Endorsements:</label><br>
-        <input type="checkbox" id="endorsement_a" name="endorsements" value="endorsement_a">
+        {{ form.endorsements(class="form-check-input", value="endorsement_a") }}
         <label for="endorsement_a">Endorsement A</label><br>
-        <input type="checkbox" id="endorsement_b" name="endorsements" value="endorsement_b">
+        {{ form.endorsements(class="form-check-input", value="endorsement_b") }}
         <label for="endorsement_b">Endorsement B</label><br>
-        <input type="checkbox" id="endorsement_c" name="endorsements" value="endorsement_c">
+        {{ form.endorsements(class="form-check-input", value="endorsement_c") }}
         <label for="endorsement_c">Endorsement C</label><br>
+        
 
         <label for="job_schedule">Job Schedule (Start and End Times):</label><br>
-        <input type="text" id="job_schedule" name="job_schedule" placeholder="Sun: 9 AM - 5 PM, Mon: 8 AM - 4 PM" required><br>
+        <input type="text" id="job_schedule" name="job_schedule" placeholder="Sun: 9 AM - 5 PM, Mon: 8 AM - 4 PM" required value="{{ form.job_schedule.data }}"><br>
 
         <button type="submit">Post Job</button>
+        <input type="submit" value="Post Job">
     </form>
 {% endblock %}
