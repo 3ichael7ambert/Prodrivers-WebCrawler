@@ -392,14 +392,19 @@ def dispatch_dashboard(username):
         drivers_without_jobs=drivers_without_jobs,
         empty_jobs_without_driver=empty_jobs_without_driver
     )
+
+
 # Route for client dashboard
 @app.route('/client_dashboard/<username>')
 #@login_required
 def client_dashboard(username):
     form = ClientDashboardForm()
-    # Retrieve client information based on username and display the dashboard
-    client = Client.query.filter_by(username=username).first()
-    return render_template('clients/client_dashboard.html', client=client)
+    # Retrieve client information based on the currently logged-in user
+    user_id = g.user.id
+    # Query the jobs that match the user's id as the client_id
+    all_jobs = Job.query.filter_by(client_id=user_id).all()
+    return render_template('clients/client_dashboard.html', all_jobs=all_jobs)
+
 
 # Route for manager dashboard
 @app.route('/manager_dashboard/<username>')
@@ -417,7 +422,10 @@ def manager_dashboard(username):
 def add_job():
     form = JobPostForm()
 
+
+
     if form.validate_on_submit():
+        
         job_title = form.job_title.data
         job_description = form.job_description.data
         job_duties = form.job_duties.data
@@ -425,7 +433,10 @@ def add_job():
         job_city = form.job_city.data
         job_payrate = form.job_payrate.data
         job_class = form.job_class.data
-
+        if g.user:
+            user_id = g.user.id  # Assuming the user object has an 'id' attribute
+        else:
+            user_id = None
 
         new_job = Job(
             job_title=job_title,
@@ -435,6 +446,8 @@ def add_job():
             job_city=job_city,
             job_payrate=job_payrate,
             job_class=job_class,
+            client_id=user_id,  # Use the user ID here
+            driver_id=None
             
         )
 

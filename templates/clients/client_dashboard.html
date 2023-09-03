@@ -10,12 +10,11 @@
         <ul>
             {% for job in all_jobs %}
                 <li>
-                    <p><strong>Job Title:</strong> {{ job.title }}</p>
-                    <p><strong>Location:</strong> {{ job.location }}</p>
+                    <p><strong>Job Title:</strong> {{ job.job_title }}</p>
+                    <p><strong>State:</strong> {{ job.job_state }}</p>
+                    <p><strong>Pay:</strong> {{ job.job_payrate }}</p>
                     <!-- Display other relevant information about the job -->
                     <form method="post">
-                        {{ client_dashboard_form.remove_driver }}
-                        {{ client_dashboard_form.delete_job }}
                     </form>
                 </li>
             {% endfor %}

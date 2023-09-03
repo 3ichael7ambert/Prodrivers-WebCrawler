@@ -113,15 +113,15 @@ class Client(db.Model):
     __tablename__ = 'clients'
     id = db.Column(db.Integer, primary_key=True)
     
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
-    first_name = db.Column(db.Integer, db.ForeignKey('user.first_name'), primary_key=True)
-    last_name = db.Column(db.Integer, db.ForeignKey('user.last_name'), primary_key=True)
-    password_hash = db.Column(db.Integer, db.ForeignKey('user.password_hash'), primary_key=True)
-    email = db.Column(db.Integer, db.ForeignKey('user.email'), primary_key=True)
-    username = db.Column(db.Integer, db.ForeignKey('user.username'), primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    first_name = db.Column(db.Integer, db.ForeignKey('user.first_name'))
+    last_name = db.Column(db.Integer, db.ForeignKey('user.last_name'))
+    password_hash = db.Column(db.Integer, db.ForeignKey('user.password_hash'))
+    email = db.Column(db.Integer, db.ForeignKey('user.email'))
+    username = db.Column(db.Integer, db.ForeignKey('user.username'))
     company_id = db.Column(db.Integer, db.ForeignKey('companies.id'))
     other_job_details = db.Column(db.String)
-    jobs = db.relationship('Job', back_populates='client')
+    # jobs = db.relationship('Job', back_populates='client')
 
 class Job(db.Model):
     __tablename__ = 'job'
@@ -133,8 +133,8 @@ class Job(db.Model):
     job_city = db.Column(db.String, nullable=False)
     job_payrate = db.Column(db.String, nullable=False)
     job_class = db.Column(db.String, nullable=False)
-    client_id = db.Column(db.Integer, db.ForeignKey('clients.id')) 
-    client = db.relationship('Client', back_populates='jobs')
+    client_id = db.Column(db.Integer, db.ForeignKey('users.id')) 
+    # client = db.relationship('Client', back_populates='jobs')
     driver_id= db.Column(db.Integer, db.ForeignKey('drivers.id')) 
 
 
@@ -157,7 +157,7 @@ class Dispatcher(db.Model):
 class Company(db.Model):
     __tablename__ = 'companies'
     id = db.Column(db.Integer, primary_key=True)
-    companyName = db.Column(db.String)
+    company_name = db.Column(db.String)
     name = db.Column(db.String(120), unique=True, nullable=False)
     
 
