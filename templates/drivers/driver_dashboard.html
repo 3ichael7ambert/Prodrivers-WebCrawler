@@ -7,7 +7,7 @@
     <h2>Current Job:</h2>
     {% if current_job %}
         <p><strong>Job Title:</strong> {{ current_job.title }}</p>
-        <p><strong>Location:</strong> {{ current_job.location }}</p>
+        <p><strong>Location:</strong> {{ current_job.job_state }}</p>
         <!-- Display other relevant information about the current job -->
         <form method="post">
             {{ driver_dashboard_form.update_profile }}

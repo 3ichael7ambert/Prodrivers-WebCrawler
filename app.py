@@ -328,40 +328,56 @@ def profile(user_id):
             return redirect(url_for('home')) 
 
 
-
 @app.route('/job_board', methods=['GET', 'POST'])
 def job_board():
     job_search_form = JobSearchForm()
+
+    web_job_data = None  # Initialize web_job_data as None
+    db_job_data = None   # Initialize db_job_data as None
 
     if request.method == 'POST':
         city = request.form.get('city')
         state = request.form.get('state')
         keyword = request.form.get('keyword')
 
-        # Construct the URL with user input
+        # Scrape job data from the website
         url = f"https://www.prodrivers.com/jobs/?_city={city}&_state={state}&_title={keyword}"
-        job_data = scrape_job_data(url)  # Pass the URL to the scrape_job_data function
+        web_job_data = scrape_job_data(url)
 
-        return render_template('job_board.html', job_search_form=job_search_form, job_data=job_data)
+        # Query your local database for job data
+        db_job_data = Job.query.all()  # Adjust the query as needed
+        # Print the job data
+        print(db_job_data)
+        for job in db_job_data:
+            print(f"Job ID: {job.id}, Title: {job.job_title}, State: {job.job_state}, City: {job.job_city}")
 
-    return render_template('job_board.html', job_search_form=job_search_form)
+    return render_template(
+        'job_board.html',
+        job_search_form=job_search_form,
+        web_job_data=web_job_data,
+        db_job_data=db_job_data,
+        # city_param=city,
+        # state_param=state,
+        # keyword=keyword
+    )
 
 
 
-def job_search():
-    job_search_form = JobSearchForm(request.args)
 
-    if job_search_form.validate_on_submit():
-        city_param = job_search_form.city.data
-        state_param = job_search_form.state.data
-        key_param = job_search_form.keyword.data
+# def job_search():
+#     job_search_form = JobSearchForm(request.args)
 
-        url = f"https://www.prodrivers.com/jobs/?_city={city_param}&_state={state_param}&_title={key_param}"
-        job_data = get_job_data(url)
+#     if job_search_form.validate_on_submit():
+#         city_param = job_search_form.city.data
+#         state_param = job_search_form.state.data
+#         key_param = job_search_form.keyword.data
 
-        return render_template('job_board.html', job_search_form=job_search_form, job_data=job_data)
-    else:
-        return render_template('job_board.html', job_search_form=job_search_form)
+#         url = f"https://www.prodrivers.com/jobs/?_city={city_param}&_state={state_param}&_title={key_param}"
+#         job_data = get_job_data(url)
+
+#         return render_template('job_board.html', job_search_form=job_search_form, job_data=job_data)
+#     else:
+#         return render_template('job_board.html', job_search_form=job_search_form)
 
 
 
@@ -489,16 +505,19 @@ def accept_job(job_id, username):
         return redirect(url_for('driver_dashboard', username=username))
 
     # Get the job based on the job_id
-    job = HiddenJob.query.get(job_id)
+    job = Job.query.get(job_id)
 
     if not job:
         flash('Job not found', 'danger')
         return redirect(url_for('driver_dashboard', username=username))
 
-    # Update the job's driver and availability status
-    job.current_availability = 'Accepted'
-    job.is_assigned = True
-    job.current_job = driver.id
+    # Check if the job is already assigned
+    if job.driver_id:
+        flash('Job is already assigned', 'danger')
+        return redirect(url_for('driver_dashboard', username=username))
+
+    # Update the job's driver_id
+    job.driver_id = user.id
 
     # Add the job to the driver's jobs
     driver_jobs = DriverJob(driver_id=driver.id, job_id=job.id)
@@ -509,6 +528,9 @@ def accept_job(job_id, username):
 
     flash('Job accepted successfully', 'success')
     return redirect(url_for('driver_dashboard', username=username))
+
+
+
 
 
 
