@@ -3,6 +3,10 @@
 {% block title %}Dispatcher Dashboard{% endblock %}
 
 {% block content %}
+
+<a href="{{ url_for('edit_dispatcher', user_id=dispatcher.user_id) }}" class="btn btn-primary">Edit Profile</a>
+
+
     <!-- Add buttons to trigger section visibility -->
     <button id="allJobsBtn">Show All Jobs</button>
     <button id="jobsByCompanyBtn">Show Jobs by Company</button>

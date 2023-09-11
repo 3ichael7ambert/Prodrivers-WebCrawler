@@ -327,13 +327,18 @@ def profile(user_id):
         else:
             return redirect(url_for('home')) 
 
-
 @app.route('/job_board', methods=['GET', 'POST'])
 def job_board():
     job_search_form = JobSearchForm()
 
     web_job_data = None  # Initialize web_job_data as None
     db_job_data = None   # Initialize db_job_data as None
+    matched_jobs = []    # Initialize matched_jobs as an empty list
+
+    # Define default values for the search parameters
+    city = None
+    state = None
+    keyword = None
 
     if request.method == 'POST':
         city = request.form.get('city')
@@ -346,20 +351,28 @@ def job_board():
 
         # Query your local database for job data
         db_job_data = Job.query.all()  # Adjust the query as needed
-        # Print the job data
-        print(db_job_data)
+
+        # Filter jobs based on search criteria
         for job in db_job_data:
-            print(f"Job ID: {job.id}, Title: {job.job_title}, State: {job.job_state}, City: {job.job_city}")
+            city_match = not city or job.job_city == city
+            state_match = not state or job.job_state == state
+            keyword_match = not keyword or (keyword in job.job_title)
+
+            if city_match or state_match or keyword_match:
+                matched_jobs.append(job)  # Add the job to the matched_jobs list
 
     return render_template(
         'job_board.html',
         job_search_form=job_search_form,
         web_job_data=web_job_data,
-        db_job_data=db_job_data,
-        # city_param=city,
-        # state_param=state,
-        # keyword=keyword
+        db_job_data=matched_jobs,  # Pass the filtered list
+        city_param=city,
+        state_param=state,
+        keyword=keyword
     )
+
+
+
 
 
 
@@ -379,6 +392,12 @@ def job_board():
 #     else:
 #         return render_template('job_board.html', job_search_form=job_search_form)
 
+#######################################################################################################################################
+@app.route('/error')
+def error():
+    return render_template('error.html')
+
+####################################################################################################################################################################################
 
 
 # Route for driver dashboard using g.user
@@ -387,9 +406,14 @@ def driver_dashboard(username):
     form = DriverDashboardForm()
     if g.user:
         driver = Driver.query.filter_by(username=username).first()
-        return render_template('drivers/driver_dashboard.html', driver=driver)
+        if driver:
+            return render_template('drivers/driver_dashboard.html', driver=driver)
+        else:
+            flash('Driver not found', 'error')
+            return redirect(url_for('error'))  # Redirect to an error page or handle the situation as needed
     else:
-        return redirect(url_for('login'))  # Redirect to login if user not logged in
+        return redirect(url_for('login'))  # Redirect to login if the user is not logged in
+
 
 
 # Route for dispatcher dashboard
@@ -572,7 +596,42 @@ def contact():
     return render_template('contact.html', form=form)
 
 
+###########################################################################################################################################################################
 
+@app.route('/edit_driver/<int:user_id>', methods=['GET', 'POST'])
+def edit_driver(user_id):
+    # Fetch the driver's data and create a form
+
+    form = YourDriverEditForm()
+
+    if form.validate_on_submit():
+        # Handle form submission (e.g., update the database)
+
+
+        return render_template('drivers/edit_driver.html', form=form, user_id=user_id)
+
+@app.route('/edit_client/<int:user_id>', methods=['GET', 'POST'])
+def edit_client(user_id):
+    # Fetch the client's data and create a form
+    form = YourClientEditForm()
+
+    if form.validate_on_submit():
+        # Handle form submission (e.g., update the database)
+
+
+        return render_template('clients/edit_client.html', form=form, user_id=user_id)
+
+@app.route('/edit_dispatcher/<int:user_id>', methods=['GET', 'POST'])
+def edit_dispatcher(user_id):
+    # Fetch the dispatcher's data and create a form
+    # Replace this with your actual code for fetching and creating the form
+    form = YourDispatcherEditForm()
+
+    if form.validate_on_submit():
+        # Handle form submission (e.g., update the database)
+
+
+        return render_template('dispatch/edit_dispatch.html', form=form, user_id=user_id)
 
 ###########################################################################################################################################################################
 

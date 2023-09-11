@@ -19,7 +19,6 @@
         {{ job_search_form.keyword(class="form-control") }}
         <button type="submit">Search</button>
     </form>
-    
 
     {% if get_flashed_messages() %}
         <div class="flash-messages">
@@ -54,59 +53,9 @@
         <p>No web job data available.</p>
     {% endif %}
 
-    
-    {% if db_job_data %}
-    <h2>Database Job Data</h2>
-    <ul>
-        {% set matched_jobs = [] %} {# Create an empty list to store matched jobs #}
-        {% for job in db_job_data %}
-            {% if (not city_param or job.job_city == city_param) or 
-                 (not state_param or job.job_state == state_param) or 
-                 (not keyword or keyword in job.job_title) %}
-                {% set matched_jobs = matched_jobs + [job] %} 
-                
-                {% set city_match = not city_param or job.job_city == city_param %}
-                {% set keyword_match = not keyword or (keyword is defined and keyword in job.job_title) %}
-                {% set state_match = not state_param or job.job_state == state_param %}
-                
-                {% if city_match or keyword_match or state_match %}
-                    {% set matched_jobs = matched_jobs + [job] %} {# Add matched job to the list #}
-                {% endif %}
-                
-                <p>Debug Info:</p>
-                <ul>
-                    <li>City Param: {{ city_param }}</li>
-                    <li>State Param: {{ state_param }}</li>
-                    <li>Keyword: {{ keyword }}</li>
-                    <li>Job City: {{ job.job_city }}</li>
-                    <li>Job State: {{ job.job_state }}</li>
-                    </ul>
-
-
-
-
-                    <li>
-                        <h3>{{ job.job_title }}</h3>
-                        <p><strong>Location:</strong> {{ job.job_city }}, {{ job.job_state }}</p>
-                        <p><strong>Base Pay:</strong> {{ job.job_payrate }}</p>
-                        <p><strong>Duties:</strong></p>
-                        <ul>
-                            {% for duty in job.job_duties.split(',') %}
-                                <li>{{ duty }}</li>
-                            {% endfor %}
-                        </ul>
-                        <!-- Add a link for database job details here -->
-                        <a href="{{ url_for('accept_job', username=g.user.username, job_id=job.id) }}">Accept Job</a>
-                    </li>
-
-                    
-            {% endif %}
-            
-
-
-
-        {% if matched_jobs %}
-
+    {% if matched_jobs %}
+        <h2>Database Job Data</h2>
+        <ul>
             {% for job in matched_jobs %}
                 <li>
                     <h3>{{ job.job_title }}</h3>
@@ -122,56 +71,8 @@
                     <a href="{{ url_for('accept_job', username=g.user.username, job_id=job.id) }}">Accept Job</a>
                 </li>
             {% endfor %}
-
-        {% else %}
-            <p>No matching job data available.</p>
-        {% endif %}
-
-
-        {% endfor %}
-
-    <!-- {% for job in db_job_data %}
-    <li>
-        <h3>{{ job.job_title }}</h3>
-        <p>Debug Info:</p>
-        <ul>
-            <li>City Param: {{ city_param }}</li>
-            <li>State Param: {{ state_param }}</li>
-            <li>Keyword: {{ keyword }}</li>
-            <li>Job City: {{ job.job_city }}</li>
-            <li>Job State: {{ job.job_state }}</li>
         </ul>
-    
-
-        
-    </li>
-{% endfor %} -->
-
-
-    <!-- {% for job in db_job_data %}
-        {% set city_match = not city_param or job.job_city == city_param %}
-        {% set keyword_match = not keyword or (keyword is defined and keyword in job.job_title) %}
-        {% set state_match = not state_param or job.job_state == state_param %}
-        
-        {% if city_match or keyword_match or state_match %}
-            {% set matched_jobs = matched_jobs + [job] %} {# Add matched job to the list #}
-        {% endif %}
-
-    {% endfor %}
-     -->
-
-
-
-    </ul>
-{% else %}
-    <p>No database job data available.</p>
-{% endif %}
-
-
-    
-
-
-
-</div>
-
+    {% else %}
+        <p>No matching job data available.</p>
+    {% endif %}
 {% endblock %}

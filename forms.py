@@ -80,3 +80,26 @@ class ClientDashboardForm(FlaskForm):
 
 class DispatchDashboardForm(FlaskForm):
     pass
+
+    ########################################################################################################
+
+class UserEditForm(FlaskForm):
+    username = StringField('Username', validators=[DataRequired(), Length(min=4, max=20)])
+    email = StringField('Email', validators=[DataRequired(), Email()])
+    first_name = StringField('First Name', validators=[DataRequired(), Length(max=50)])
+    last_name = StringField('Last Name', validators=[DataRequired(), Length(max=50)])
+    submit = SubmitField('Save Changes')
+    
+class DriverEditForm(UserEditForm):
+    # Add fields specific to the driver profile here
+    license_number = StringField('License Number', validators=[DataRequired(), Length(max=20)])
+    car_make = StringField('Car Make', validators=[DataRequired(), Length(max=50)])
+    car_model = StringField('Car Model', validators=[DataRequired(), Length(max=50)])
+
+class ClientEditForm(UserEditForm):
+    # Add fields specific to the client profile here
+    company_name = StringField('Company Name', validators=[DataRequired(), Length(max=100)])
+
+class DispatcherEditForm(UserEditForm):
+    # Add fields specific to the dispatcher profile here
+    department = StringField('Department', validators=[DataRequired(), Length(max=50)])

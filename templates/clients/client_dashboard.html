@@ -4,7 +4,9 @@
 
 {% block content %}
     <h1>Welcome, {{ client_name }}</h1>
- 
+    <a href="{{ url_for('edit_client', user_id=client.user_id) }}" class="btn btn-primary">Edit Profile</a>
+
+    
     <h2>All Jobs:</h2>
     {% if all_jobs %}
         <ul>
