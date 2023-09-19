@@ -136,7 +136,7 @@ class Job(db.Model):
     job_payrate = db.Column(db.String, nullable=False)
     job_class = db.Column(db.String, nullable=False)
     client_id = db.Column(db.Integer, db.ForeignKey('users.id')) 
-    driver_id= db.Column(db.Integer, db.ForeignKey('drivers.id')) 
+    driver_id= db.Column(db.Integer, db.ForeignKey('users.id')) 
 
 
 class Dispatcher(db.Model):
