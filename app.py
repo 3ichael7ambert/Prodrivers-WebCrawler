@@ -105,6 +105,15 @@ state_abbreviations = ["AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "FL", "GA
                        "NM", "NY", "NC", "ND", "OH", "OK", "OR", "PA", "RI", "SC",
                        "SD", "TN", "TX", "UT", "VT", "VA", "WA", "WV", "WI", "WY"]
 
+################################################################################################################################################################################################
+
+
+def fetch_users_without_jobs(role='driver'):
+    users_without_jobs = User.query.filter(
+        User.role == role,
+        ~User.jobs.any() 
+    ).all()
+    return users_without_jobs
 
 
 
@@ -421,9 +430,14 @@ def driver_dashboard(username):
 #@login_required
 def dispatch_dashboard(username):
     form = DispatchDashboardForm()
+    
+    all_jobs = Job.query.all()
+    drivers_without_jobs = fetch_users_without_jobs(role='driver')
+    
     # Retrieve dispatcher information based on username and display the dashboard
     jobs_by_company = {} 
     dispatcher = Dispatcher.query.filter_by(username=username).first()
+    
     return render_template(
         'dispatch/dispatch_dashboard.html',
         dispatcher=dispatcher,
@@ -432,6 +446,8 @@ def dispatch_dashboard(username):
         drivers_without_jobs=drivers_without_jobs,
         empty_jobs_without_driver=empty_jobs_without_driver
     )
+
+
 
 
 # Route for client dashboard
@@ -474,7 +490,7 @@ def add_job():
         job_payrate = form.job_payrate.data
         job_class = form.job_class.data
         if g.user:
-            user_id = g.user.id  # Assuming the user object has an 'id' attribute
+            user_id = g.user.id  
         else:
             user_id = None
 
@@ -486,7 +502,7 @@ def add_job():
             job_city=job_city,
             job_payrate=job_payrate,
             job_class=job_class,
-            client_id=user_id,  # Use the user ID here
+            client_id=user_id,  
             driver_id=None
             
         )
@@ -519,14 +535,14 @@ def edit_job(job_id):
 
 
 
+
+
 @app.route('/accept_job/<int:job_id>/<username>')
 def accept_job(job_id, username):
-    # Get the driver based on the username
-    driver = Driver.query.filter_by(username=username).first()
-
-    if not driver:
-        flash('Driver not found', 'danger')
-        return redirect(url_for('driver_dashboard', username=username))
+    # Check if the current user is authenticated
+    if not g.user:
+        flash('You must be logged in to accept a job', 'danger')
+        return redirect(url_for('login'))  # Adjust the route to your login page
 
     # Get the job based on the job_id
     job = Job.query.get(job_id)
@@ -540,18 +556,22 @@ def accept_job(job_id, username):
         flash('Job is already assigned', 'danger')
         return redirect(url_for('driver_dashboard', username=username))
 
-    # Update the job's driver_id
-    job.driver_id = user.id
+    # Update the job's driver_id with the current user's ID
+    job.driver_id = g.user.id
 
-    # Add the job to the driver's jobs
-    driver_jobs = DriverJob(driver_id=driver.id, job_id=job.id)
-    db.session.add(driver_jobs)
+    # Update the user's current_job_id
+    g.user.current_job_id = job_id
 
-    # Commit the changes to the database
+    # Add the modified job and user to the session and commit the changes to the database
+    db.session.add(job)
+    db.session.add(g.user)
     db.session.commit()
 
     flash('Job accepted successfully', 'success')
     return redirect(url_for('driver_dashboard', username=username))
+
+
+
 
 
 

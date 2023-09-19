@@ -20,7 +20,9 @@ class User(db.Model):
     password_hash = db.Column(db.String(), nullable=False)
     role = db.Column(db.String(50), nullable=False)
     license_type = db.Column(db.String(50)) 
-    company_name = db.Column(db.String(100)) 
+    company_name = db.Column(db.String(100))
+    current_job_id = db.Column(db.Integer, db.ForeignKey('job.id'))
+     
  
 
  
