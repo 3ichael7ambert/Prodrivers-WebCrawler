@@ -28,18 +28,27 @@
         color: white;
     }
     
+
     .navbar-nav {
-        display: none; /* Hide the nav items */
+        display: none; 
         flex-direction: column;
         align-items: center;
         background-color: grey;
     }
 
+    .navbar-nav a {
+        text-decoration: none; 
+        color: white;
+        padding: 10px 20px;
+        display: block; 
+        margin: 5px 0; 
+    }
+
     .content {
         position: absolute;
-        top: 50%;
         left: 50%;
-        transform: translate(-50%, -50%);
+        transform: translateX(-50%);
+        margin-top: 10px; 
     }
     
     
@@ -75,17 +84,25 @@
     }
     
     .navbar-nav {
-        display: none; /* Hide the nav items */
+        display: none; 
         flex-direction: column;
         align-items: center;
         background-color: grey;
     }
 
+    .navbar-nav a {
+        text-decoration: none; 
+        color: white;
+        padding: 10px 20px; 
+        display: block; 
+        margin: 5px 0;
+    }
+
     .content {
         position: absolute;
-        top: 50%;
         left: 50%;
-        transform: translate(-50%, -50%);
+        transform: translateX(-50%);
+        margin-top: 10px; 
     }
     
 }
@@ -105,7 +122,20 @@
         text-align: center;
         background-color: black;
     }
-    
+    .navbar-nav {
+        display: block;
+        flex-direction: column;
+        align-items: center;
+        background-color: grey;
+    }
+
+    .navbar-nav a {
+        text-decoration: none; 
+        color: white;
+        padding: 10px 20px; 
+        display: block; 
+        margin: 5px 0; 
+    }
     .navbar-toggler {
         display: block;
         background-color: transparent;
@@ -129,9 +159,9 @@
 
     .content {
         position: absolute;
-        top: 50%;
         left: 50%;
-        transform: translate(-50%, -50%);
+        transform: translateX(-50%);
+        margin-top: 10px; 
     }
 }
 
@@ -151,7 +181,20 @@
         text-align: center;
         background-color: black;
     }
-    
+    .navbar-nav {
+        display: block;
+        flex-direction: column;
+        align-items: center;
+        background-color: grey;
+    }
+
+    .navbar-nav a {
+        text-decoration: none; 
+        color: white;
+        padding: 10px 20px; 
+        display: block; 
+        margin: 5px 0; 
+    }
     .navbar-toggler {
         display: block;
         background-color: transparent;
@@ -173,9 +216,9 @@
 
     .content {
         position: absolute;
-        top: 50%;
         left: 50%;
-        transform: translate(-50%, -50%);
+        transform: translateX(-50%);
+        margin-top: 10px; 
     }
 }
 
@@ -195,16 +238,29 @@
         padding: 30px;
         background-color: black;
     }
-    
+    .navbar-nav {
+        display:block;
+        flex-direction: column;
+        align-items: center;
+        background-color: grey;
+    }
+
+    .navbar-nav a {
+        text-decoration: none; 
+        color: white;
+        padding: 10px 20px; 
+        display: block; 
+        margin: 5px 0; 
+    }
     .navbar-toggler {
         display: none;
     }
 
     .content {
         position: absolute;
-        top: 50%;
         left: 50%;
-        transform: translate(-50%, -50%);
+        transform: translateX(-50%);
+        margin-top: 10px; 
     }
 }
 
@@ -226,6 +282,21 @@
         background-color: black;
     }
     
+    .navbar-nav {
+        display: none; 
+        flex-direction: column;
+        align-items: center;
+        background-color: grey;
+    }
+
+    .navbar-nav a {
+        text-decoration: none; 
+        color: white;
+        padding: 10px 20px; 
+        display: block; 
+        margin: 5px 0; 
+    }
+
     .navbar-toggler {
         display: block;
         background-color: transparent;
@@ -234,9 +305,9 @@
     
     .content {
         position: absolute;
-        top: 50%;
         left: 50%;
-        transform: translate(-50%, -50%);
+        transform: translateX(-50%);
+        margin-top: 10px; 
     }
 }
 
@@ -279,6 +350,9 @@ input {
 
 
 .content {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
     margin: 20px auto;
     max-width: 800px;
     padding: 20px;

@@ -383,24 +383,6 @@ def job_board():
 
 
 
-
-
-
-# def job_search():
-#     job_search_form = JobSearchForm(request.args)
-
-#     if job_search_form.validate_on_submit():
-#         city_param = job_search_form.city.data
-#         state_param = job_search_form.state.data
-#         key_param = job_search_form.keyword.data
-
-#         url = f"https://www.prodrivers.com/jobs/?_city={city_param}&_state={state_param}&_title={key_param}"
-#         job_data = get_job_data(url)
-
-#         return render_template('job_board.html', job_search_form=job_search_form, job_data=job_data)
-#     else:
-#         return render_template('job_board.html', job_search_form=job_search_form)
-
 #######################################################################################################################################
 @app.route('/error')
 def error():
@@ -416,7 +398,9 @@ def driver_dashboard(username):
     if g.user:
         driver = Driver.query.filter_by(username=username).first()
         if driver:
-            return render_template('drivers/driver_dashboard.html', driver=driver)
+            # Assuming you have a relationship between Driver and Job in your SQLAlchemy models
+            current_job = driver.current_job  # This assumes you have a relationship set up
+            return render_template('drivers/driver_dashboard.html', driver=driver, current_job=current_job, driver_dashboard_form=form)
         else:
             flash('Driver not found', 'error')
             return redirect(url_for('error'))  # Redirect to an error page or handle the situation as needed
