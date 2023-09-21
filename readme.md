@@ -6,11 +6,13 @@ This project is a part of the Software Engineering Career Track course as it is 
 
 For this project I wanted to take hand at creating my own API from an external website. [ProDrivers](http://www.prodrivers.com/)
 
-
 API
+
 ```api
 https://www.prodrivers.com/jobs/?_city={city_param}&_state={state_param}&_title={key_param}
 ```
+
+You can view the deployed application here: [Prodrivers - Webcrawl](https://prodrivers-webcrawl.onrender.com/)
 
 ## Project Overview
 
@@ -28,13 +30,21 @@ The Capstone Part I project focuses on building a custom API using web scraping 
 - Login/Logout
 - Create Additional Jobs that are not apart of API
 
+### Userflow
+
+- You may search for jobs without logging in
+- If you 'Sign Up' then you can choose a role 'Driver', 'Dispatcher' and 'Client'
+- As far as the relations go:
+![SVG Logo](schema.svg)
+
 ### Technology Stack
 
 - Python
 - BeautifulSoup4
 - Requests
 - Flask
-
+- Jinja2
+  
 ## Installation
 
 You can install the required libraries for this project using pip. Simply run the following command inside the local directory of the project:
@@ -48,7 +58,8 @@ flask run
 
 If for any reason 'pip install -r requirements.txt' fails you may copy the entire contents of the [post_requirements_manual.md](post_requirements_manual.md)
 file into your terminal.
-## Running the Web Scraper
+
+## Running the Web Scrapes
 
 To run the web scraper and obtain API responses, execute the following command:
 

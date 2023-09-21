@@ -12,7 +12,7 @@ from flask_bcrypt import Bcrypt, generate_password_hash, check_password_hash
 
 from flask_debugtoolbar import DebugToolbarExtension
 
-from models import db, connect_db, Driver, Client, Dispatcher, Company, HiddenJob, User, Job
+from models import db, connect_db, User, Job #,Driver, Client, Dispatcher, Company, HiddenJob
 from forms import LoginForm, RegisterForm, JobSearchForm, JobPostForm, JobEditForm, UserProfileForm, DriverDashboardForm, ClientDashboardForm, DispatchDashboardForm
 
 from webcrawl import scrape_job_data

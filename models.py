@@ -80,50 +80,50 @@ class User(db.Model):
         return False
 
 
-class UserRole(Enum):
-    DRIVER = 'driver'
-    DISPATCHER = 'dispatcher'
-    CLIENT = 'client'
+# class UserRole(Enum):
+#     DRIVER = 'driver'
+#     DISPATCHER = 'dispatcher'
+#     CLIENT = 'client'
 
-class Driver(db.Model):
-    __tablename__ = 'drivers'
-    id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
-    first_name = db.Column(db.Integer, db.ForeignKey('user.first_name'), primary_key=True)
-    last_name = db.Column(db.Integer, db.ForeignKey('user.last_name'), primary_key=True)
-    password_hash = db.Column(db.Integer, db.ForeignKey('user.password_hash'), primary_key=True)
-    email = db.Column(db.Integer, db.ForeignKey('user.email'), primary_key=True)
-    username = db.Column(db.Integer, db.ForeignKey('user.username'), primary_key=True)
-    other_job_details = db.Column(db.String)
-    #companyID = db.Column(db.Integer, db.ForeignKey('companies.id'))    
-    company_id = db.Column(db.Integer, db.ForeignKey('companies.id'))
-    driver_type = db.Column(db.String)
-    current_availability = db.Column(db.String)
-    is_assigned = db.Column(db.Boolean)
-    current_job = db.Column(db.Integer, db.ForeignKey('job.id'), primary_key=True)
+# class Driver(db.Model):
+#     __tablename__ = 'drivers'
+#     id = db.Column(db.Integer, primary_key=True)
+#     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
+#     first_name = db.Column(db.Integer, db.ForeignKey('user.first_name'), primary_key=True)
+#     last_name = db.Column(db.Integer, db.ForeignKey('user.last_name'), primary_key=True)
+#     password_hash = db.Column(db.Integer, db.ForeignKey('user.password_hash'), primary_key=True)
+#     email = db.Column(db.Integer, db.ForeignKey('user.email'), primary_key=True)
+#     username = db.Column(db.Integer, db.ForeignKey('user.username'), primary_key=True)
+#     other_job_details = db.Column(db.String)
+#     #companyID = db.Column(db.Integer, db.ForeignKey('companies.id'))    
+#     company_id = db.Column(db.Integer, db.ForeignKey('companies.id'))
+#     driver_type = db.Column(db.String)
+#     current_availability = db.Column(db.String)
+#     is_assigned = db.Column(db.Boolean)
+#     current_job = db.Column(db.Integer, db.ForeignKey('job.id'), primary_key=True)
 
     
 
-class DriverJob(db.Model):
-    __tablename__ = 'driver_job'
-    id = db.Column(db.Integer, primary_key=True)
-    driver_id = db.Column(db.Integer, db.ForeignKey('driver.id'))
-    job_id = db.Column(db.Integer, db.ForeignKey('job.id'))
+# class DriverJob(db.Model):
+#     __tablename__ = 'driver_job'
+#     id = db.Column(db.Integer, primary_key=True)
+#     driver_id = db.Column(db.Integer, db.ForeignKey('driver.id'))
+#     job_id = db.Column(db.Integer, db.ForeignKey('job.id'))
     
 
-class Client(db.Model):
-    __tablename__ = 'clients'
-    id = db.Column(db.Integer, primary_key=True)
+# class Client(db.Model):
+#     __tablename__ = 'clients'
+#     id = db.Column(db.Integer, primary_key=True)
     
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-    first_name = db.Column(db.Integer, db.ForeignKey('user.first_name'))
-    last_name = db.Column(db.Integer, db.ForeignKey('user.last_name'))
-    password_hash = db.Column(db.Integer, db.ForeignKey('user.password_hash'))
-    email = db.Column(db.Integer, db.ForeignKey('user.email'))
-    username = db.Column(db.Integer, db.ForeignKey('user.username'))
-    company_id = db.Column(db.Integer, db.ForeignKey('companies.id'))
-    other_job_details = db.Column(db.String)
-    # jobs = db.relationship('Job', back_populates='client')
+#     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+#     first_name = db.Column(db.Integer, db.ForeignKey('user.first_name'))
+#     last_name = db.Column(db.Integer, db.ForeignKey('user.last_name'))
+#     password_hash = db.Column(db.Integer, db.ForeignKey('user.password_hash'))
+#     email = db.Column(db.Integer, db.ForeignKey('user.email'))
+#     username = db.Column(db.Integer, db.ForeignKey('user.username'))
+#     company_id = db.Column(db.Integer, db.ForeignKey('companies.id'))
+#     other_job_details = db.Column(db.String)
+#     # jobs = db.relationship('Job', back_populates='client')
 
 class Job(db.Model):
     __tablename__ = 'job'
@@ -139,38 +139,38 @@ class Job(db.Model):
     driver_id= db.Column(db.Integer, db.ForeignKey('users.id')) 
 
 
-class Dispatcher(db.Model):
-    __tablename__ = 'dispatchers'
-    id = db.Column(db.Integer, primary_key=True)
+# class Dispatcher(db.Model):
+#     __tablename__ = 'dispatchers'
+#     id = db.Column(db.Integer, primary_key=True)
 
-    username = db.Column(db.Integer, db.ForeignKey('user.username'), primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
-    first_name = db.Column(db.String, db.ForeignKey('user.first_name'), primary_key=True)
-    last_name = db.Column(db.String, db.ForeignKey('user.last_name'), primary_key=True)
-    password_hash = db.Column(db.String, db.ForeignKey('user.password_hash'), primary_key=True)
-    email = db.Column(db.String, db.ForeignKey('user.email'), primary_key=True)
+#     username = db.Column(db.Integer, db.ForeignKey('user.username'), primary_key=True)
+#     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
+#     first_name = db.Column(db.String, db.ForeignKey('user.first_name'), primary_key=True)
+#     last_name = db.Column(db.String, db.ForeignKey('user.last_name'), primary_key=True)
+#     password_hash = db.Column(db.String, db.ForeignKey('user.password_hash'), primary_key=True)
+#     email = db.Column(db.String, db.ForeignKey('user.email'), primary_key=True)
 
-    #user = db.relationship('User', backref='dispatcher', uselist=False)
+#     #user = db.relationship('User', backref='dispatcher', uselist=False)
 
-    def __repr__(self):
-        return f"<Dispatcher #{self.id}: {self.username}, {self.email}>"
+#     def __repr__(self):
+#         return f"<Dispatcher #{self.id}: {self.username}, {self.email}>"
 
-class Company(db.Model):
-    __tablename__ = 'companies'
-    id = db.Column(db.Integer, primary_key=True)
-    company_name = db.Column(db.String)
-    name = db.Column(db.String(120), unique=True, nullable=False)
+# class Company(db.Model):
+#     __tablename__ = 'companies'
+#     id = db.Column(db.Integer, primary_key=True)
+#     company_name = db.Column(db.String)
+#     name = db.Column(db.String(120), unique=True, nullable=False)
     
 
-class HiddenJob(db.Model):
-    __tablename__ = 'hidden_jobs'
-    id = db.Column(db.Integer, primary_key=True)
-    jobName = db.Column(db.String)
-    jobDescription = db.Column(db.String)
-    jobSchedule = db.Column(db.String)
-    jobRateOfPay = db.Column(db.String)
-    otherJobDetails = db.Column(db.String)
-    isHidden = db.Column(db.Boolean)
+# class HiddenJob(db.Model):
+#     __tablename__ = 'hidden_jobs'
+#     id = db.Column(db.Integer, primary_key=True)
+#     jobName = db.Column(db.String)
+#     jobDescription = db.Column(db.String)
+#     jobSchedule = db.Column(db.String)
+#     jobRateOfPay = db.Column(db.String)
+#     otherJobDetails = db.Column(db.String)
+#     isHidden = db.Column(db.Boolean)
     
 
  
