@@ -12,7 +12,7 @@ from flask_bcrypt import Bcrypt, generate_password_hash, check_password_hash
 
 from flask_debugtoolbar import DebugToolbarExtension
 
-from models import db, connect_db, User, Job #,Driver, Client, Dispatcher, Company, HiddenJob
+from models import db, connect_db, User, Job ,Driver#, Client, Dispatcher, Company, HiddenJob
 from forms import LoginForm, RegisterForm, JobSearchForm, JobPostForm, JobEditForm, UserProfileForm, DriverDashboardForm, ClientDashboardForm, DispatchDashboardForm
 
 from webcrawl import scrape_job_data
@@ -390,22 +390,40 @@ def error():
 
 ####################################################################################################################################################################################
 
-
 # Route for driver dashboard using g.user
-@app.route('/driver_dashboard/<username>')
+@app.route('/driver_dashboard/<username>', methods=['GET', 'POST'])
 def driver_dashboard(username):
     form = DriverDashboardForm()
-    if g.user:
-        driver = Driver.query.filter_by(username=username).first()
-        if driver:
-            # Assuming you have a relationship between Driver and Job in your SQLAlchemy models
-            current_job = driver.current_job  # This assumes you have a relationship set up
-            return render_template('drivers/driver_dashboard.html', driver=driver, current_job=current_job, driver_dashboard_form=form)
-        else:
-            flash('Driver not found', 'error')
-            return redirect(url_for('error'))  # Redirect to an error page or handle the situation as needed
-    else:
-        return redirect(url_for('login'))  # Redirect to login if the user is not logged in
+    user = g.user  # Retrieve the user from g.user
+
+    if user:
+        user = User.query.filter_by(username=username).first()
+        job = Job.query.filter_by(driver_id=user.id).first()  # Use driver_id here
+
+        # Inside your driver_dashboard function
+        if request.method == 'POST' and form.validate_on_submit():
+            if job:
+                # Remove the current g.user's ID from the driver_id column of the current job
+                job.driver_id = None
+
+                # Clear the current_job_id from the users table for the current g.user
+                user.current_job_id = None
+
+                # Commit the changes to the database
+                db.session.commit()
+
+                flash('Job removed successfully.', 'success')
+                return redirect(url_for('driver_dashboard', username=username))  # Include the 'username' parameter
+
+            flash('No job associated with the user.', 'warning')
+            return redirect(url_for('driver_dashboard', username=username))  # Include the 'username' parameter
+
+        # Render the template with the 'user' and 'job' variables
+        return render_template('drivers/driver_dashboard.html', user=user, job=job, driver_dashboard_form=form)
+
+    return redirect(url_for('login'))
+
+
 
 
 

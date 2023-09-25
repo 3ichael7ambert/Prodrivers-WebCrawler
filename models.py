@@ -85,22 +85,21 @@ class User(db.Model):
 #     DISPATCHER = 'dispatcher'
 #     CLIENT = 'client'
 
-# class Driver(db.Model):
-#     __tablename__ = 'drivers'
-#     id = db.Column(db.Integer, primary_key=True)
-#     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
-#     first_name = db.Column(db.Integer, db.ForeignKey('user.first_name'), primary_key=True)
-#     last_name = db.Column(db.Integer, db.ForeignKey('user.last_name'), primary_key=True)
-#     password_hash = db.Column(db.Integer, db.ForeignKey('user.password_hash'), primary_key=True)
-#     email = db.Column(db.Integer, db.ForeignKey('user.email'), primary_key=True)
-#     username = db.Column(db.Integer, db.ForeignKey('user.username'), primary_key=True)
-#     other_job_details = db.Column(db.String)
-#     #companyID = db.Column(db.Integer, db.ForeignKey('companies.id'))    
-#     company_id = db.Column(db.Integer, db.ForeignKey('companies.id'))
-#     driver_type = db.Column(db.String)
-#     current_availability = db.Column(db.String)
-#     is_assigned = db.Column(db.Boolean)
-#     current_job = db.Column(db.Integer, db.ForeignKey('job.id'), primary_key=True)
+class Driver(db.Model):
+    __tablename__ = 'drivers'
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
+    first_name = db.Column(db.Integer, db.ForeignKey('user.first_name'), primary_key=True)
+    last_name = db.Column(db.Integer, db.ForeignKey('user.last_name'), primary_key=True)
+    password_hash = db.Column(db.Integer, db.ForeignKey('user.password_hash'), primary_key=True)
+    email = db.Column(db.Integer, db.ForeignKey('user.email'), primary_key=True)
+    username = db.Column(db.Integer, db.ForeignKey('user.username'), primary_key=True)
+    other_job_details = db.Column(db.String) 
+    company_id = db.Column(db.Integer, db.ForeignKey('companies.id'))
+    driver_type = db.Column(db.String)
+    current_availability = db.Column(db.String)
+    is_assigned = db.Column(db.Boolean)
+    current_job = db.Column(db.Integer, db.ForeignKey('job.id'), primary_key=True)
 
     
 

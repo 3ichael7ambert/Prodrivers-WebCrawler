@@ -9,12 +9,18 @@ from models import User
 
 #######################################################################################################################
 
+# List of state abbreviations
+state_abbreviations = ["AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "FL", "GA",
+                       "HI", "ID", "IL", "IN", "IA", "KS", "KY", "LA", "ME", "MD",
+                       "MA", "MI", "MN", "MS", "MO", "MT", "NE", "NV", "NH", "NJ",
+                       "NM", "NY", "NC", "ND", "OH", "OK", "OR", "PA", "RI", "SC",
+                       "SD", "TN", "TX", "UT", "VT", "VA", "WA", "WV", "WI", "WY"]
 
 #######################################################################################################################
 class LoginForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired()])
     password_hash = PasswordField('Password', validators=[Length(min=6)])
-    remember_me = BooleanField('Remember Me')
+    # remember_me = BooleanField('Remember Me')
 
 
 class RegisterForm(FlaskForm):
@@ -33,8 +39,9 @@ class RegisterForm(FlaskForm):
 
 class JobSearchForm(FlaskForm):
     city = StringField('City')
-    state = StringField('State')
+    state = SelectField('State', choices=[(state, state) for state in state_abbreviations])
     keyword = StringField('Keyword')
+
 
 class JobPostForm(FlaskForm):
     job_title = StringField('Job Title', validators=[DataRequired()])

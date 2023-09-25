@@ -3,16 +3,14 @@
 {% block title %}Driver Dashboard{% endblock %}
 
 {% block content %}
-    <h1>Welcome, {{ driver_name }}</h1>
-    <a href="{{ url_for('edit_driver', user_id=driver.user_id) }}" class="btn btn-primary">Edit Profile</a>
-
+    <h1>Welcome, {{ user.username }}</h1>
 
     <h2>Current Job:</h2>
-    {% if current_job %}
-        <p><strong>Job Title:</strong> {{ current_job.title }}</p>
-        <p><strong>Location:</strong> {{ current_job.job_state }}</p>
-        <!-- Display other relevant information about the current job -->
+    {% if job %}
+        <p><strong>Job Title:</strong> {{ job.job_title }}</p>
+        <p><strong>Location:</strong> {{ job.job_state }}, {{ job.job_city }}</p>
         <form method="post">
+            {{ driver_dashboard_form.hidden_tag() }}
             {{ driver_dashboard_form.update_profile }}
             {{ driver_dashboard_form.remove_job }}
         </form>

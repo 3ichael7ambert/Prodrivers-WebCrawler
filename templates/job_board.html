@@ -4,21 +4,28 @@
 
 {% block content %}
     <h1>Job Board</h1>
-
-    <!-- Job Search Form -->
-    <form action="{{ url_for('job_board') }}" method="post">
-        {{ job_search_form.csrf_token }}
-                
-        <label for="city">City:</label>
-        <input type="text" id="city" name="city" value="{{ request.form.city }}">
+<!-- Job Search Form -->
+<form action="{{ url_for('job_board') }}" method="post">
+    {{ job_search_form.csrf_token }}
     
-        <label for="state">State:</label>
-        <input type="text" id="state" name="state" value="{{ request.form.state }}">
-                
-        <label for="keyword">Keyword:</label>
+    <div class="form-group">
+        {{ job_search_form.city.label(class="form-control-label") }}
+        {{ job_search_form.city(class="form-control") }}
+    </div>
+
+    <div class="form-group">
+        {{ job_search_form.state.label(class="form-control-label") }}
+        {{ job_search_form.state(class="form-control") }}
+    </div>
+    
+    <div class="form-group">
+        {{ job_search_form.keyword.label(class="form-control-label") }}
         {{ job_search_form.keyword(class="form-control") }}
-        <button type="submit">Search</button>
-    </form>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Search</button>
+</form>
+
 
     {% if get_flashed_messages() %}
         <div class="flash-messages">
