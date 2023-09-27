@@ -2,60 +2,49 @@
 <html>
 <head>
     <title>{% block title %}{% endblock %}</title>
-    <link rel="stylesheet" href="/static/style.css">
     <link rel="shortcut icon" href="https://www.prodrivers.com/wp-content/uploads/2023/05/favicon.ico">
+    <!-- <link rel="stylesheet" href="/static/style.css"> -->
+
+    <!-- Include Tailwind CSS from CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.16/dist/tailwind.min.css" rel="stylesheet">
 </head>
-<body>
-    <header>
+<body class="bg-gray-100">
+    <header class="bg-red-500 text-white p-4 text-center">
         <!-- header -->
         <img src="https://www.prodrivers.com/wp-content/uploads/2023/05/prodrivers_horizontal_rgb.jpg" width="150px" height="41px">
     </header>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <div class="container">
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-                    aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+    <nav class="bg-black text-white">
+        <div class="container mx-auto">
+            <button class="navbar-toggler bg-transparent border-none">
                 <span class="navbar-toggler-icon"></span>
             </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav">
-                    <li><a href="{{ url_for('home') }}">Home</a></li>
-                    
-                    {% if g.user %}
-                        {% if g.user.role == 'driver' %}
-                            <li><a href="{{ url_for('driver_dashboard', username=g.user.username) }}">Driver Dashboard</a></li>
-                        {% elif g.user.role == 'client' %}
-                            <li><a href="{{ url_for('client_dashboard', username=g.user.username) }}">Client Dashboard</a></li>
-                        {% elif g.user.role == 'dispatcher' %}
-                            <li><a href="{{ url_for('dispatch_dashboard', username=g.user.username) }}">Dispatcher Dashboard</a></li>
-                        {% elif g.user.role == 'manager' %}
-                            <li><a href="{{ url_for('manager_dashboard', username=g.user.username) }}">Manager Dashboard</a></li>
-                        {% endif %}
-                        <li><a href="{{ url_for('profile', user_id=g.user.id) }}">{{ g.user.username }}</a></li>
-                        <li><a href="{{ url_for('logout') }}">Logout</a></li>
-                    {% else %}
-                        <li><a href="{{ url_for('login') }}">Login</a></li>
-                        <li><a href="{{ url_for('register') }}">Register</a></li>
+            <div class="collapse-button text-center mt-10 text-white">
+                <a href="{{ url_for('home') }}">Home</a>
+                {% if g.user %}
+                    {% if g.user.role == 'driver' %}
+                        <a href="{{ url_for('driver_dashboard', username=g.user.username) }}">Driver Dashboard</a>
+                    {% elif g.user.role == 'client' %}
+                        <a href="{{ url_for('client_dashboard', username=g.user.username) }}">Client Dashboard</a>
+                    {% elif g.user.role == 'dispatcher' %}
+                        <a href="{{ url_for('dispatch_dashboard', username=g.user.username) }}">Dispatcher Dashboard</a>
+                    {% elif g.user.role == 'manager' %}
+                        <a href="{{ url_for('manager_dashboard', username=g.user.username) }}">Manager Dashboard</a>
                     {% endif %}
-                    
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('about') }}">About</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('services') }}">Services</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('contact') }}">Contact</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('job_board') }}">Job Board</a>
-                    </li>
-                </ul>
+                    <a href="{{ url_for('profile', user_id=g.user.id) }}">{{ g.user.username }}</a>
+                    <a href="{{ url_for('logout') }}">Logout</a>
+                {% else %}
+                    <a href="{{ url_for('login') }}">Login</a>
+                    <a href="{{ url_for('register') }}">Register</a>
+                {% endif %}
+                <a class="nav-link" href="{{ url_for('about') }}">About</a>
+                <a class="nav-link" href="{{ url_for('services') }}">Services</a>
+                <a class="nav-link" href="{{ url_for('contact') }}">Contact</a>
+                <a class="nav-link" href="{{ url_for('job_board') }}">Job Board</a>
             </div>
         </div>
     </nav>
     
-
-    <div class="content">
+    <div class="container mx-auto p-4">
         {% block content %}
         {% endblock %}
     </div>
@@ -69,13 +58,12 @@
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             var navbarToggler = document.querySelector(".navbar-toggler");
-            var navbarCollapse = document.querySelector(".navbar-collapse");
+            var navbarCollapse = document.querySelector(".collapse-button");
     
             navbarToggler.addEventListener("click", function () {
-                navbarCollapse.classList.toggle("show");
+                navbarCollapse.classList.toggle("hidden");
             });
         });
     </script>
-
 </body>
 </html>
