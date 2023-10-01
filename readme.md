@@ -89,9 +89,25 @@ This command will initiate the scraping process, and you should see a list of re
 pip freeze > requirements.txt
 ```
 
+- The database is hosted at ElephantSQL
+
+- For refrence: to upload the local database to the cloud database, run this comman locally.
+
+```bash
+pg_dump -O driver_jobs_db | psql postgres://ruvsrxcf:giAGBlxEC4V08La-OWwdBdi5lr8-2-9W@mahmud.db.elephantsql.com/ruvsrxcf
+```
+
+- To view the database
+
+```bash
+psql postgres://ruvsrxcf:giAGBlxEC4V08La-OWwdBdi5lr8-2-9W@mahmud.db.elephantsql.com/ruvsrxcf
+```
+
 ## Additional Information
 
 - The project's GitHub repository contains all the code and documentation.
 - For details on the specific API endpoints and data structure, refer to the API documentation in the code.
 
 This project is a demonstration of web scraping techniques and creating custom APIs. It can be extended and modified to suit various data extraction needs.
+
+
