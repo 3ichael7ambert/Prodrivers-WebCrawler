@@ -3,9 +3,9 @@
 {% block title %}Client Dashboard{% endblock %}
 
 {% block content %}
-    <h1>Welcome, {{ client_name }}</h1>
+{% if client %}
+    <h1>Welcome, <h1>Welcome, {{ client.first_name }} {{ client.last_name }}</h1>
     <a href="{{ url_for('edit_client', user_id=client.user_id) }}" class="btn btn-primary">Edit Profile</a>
-
     
     <h2>All Jobs:</h2>
     {% if all_jobs %}
@@ -28,5 +28,5 @@
     <form method="get" action="{{ url_for('add_job') }}">
         <button type="submit">Add New Job</button>
     </form>
-    
+{% endif %}
 {% endblock %}

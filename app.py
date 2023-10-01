@@ -12,7 +12,7 @@ from flask_bcrypt import Bcrypt, generate_password_hash, check_password_hash
 
 from flask_debugtoolbar import DebugToolbarExtension
 
-from models import db, connect_db, User, Job ,Driver#, Client, Dispatcher, Company, HiddenJob
+from models import db, connect_db, User, Job ,Driver, Client, Dispatcher, Company, HiddenJob
 from forms import LoginForm, RegisterForm, JobSearchForm, JobPostForm, JobEditForm, UserProfileForm, DriverDashboardForm, ClientDashboardForm, DispatchDashboardForm
 
 from webcrawl import scrape_job_data
@@ -109,11 +109,19 @@ state_abbreviations = ["AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "FL", "GA
 
 
 def fetch_users_without_jobs(role='driver'):
-    users_without_jobs = User.query.filter(
-        User.role == role,
-        ~User.jobs.any() 
-    ).all()
+    # Assuming you have a User model defined
+    if role == 'driver':
+        # Query for users with the 'driver' role who don't have a job
+        users_without_jobs = User.query.filter(
+            User.role == 'driver',
+            User.current_job_id.is_(None)  # Check if the user doesn't have a job
+        ).all()
+    else:
+        # Handle other roles or customize the query as needed
+        users_without_jobs = []
+
     return users_without_jobs
+
 
 
 
@@ -436,32 +444,52 @@ def dispatch_dashboard(username):
     all_jobs = Job.query.all()
     drivers_without_jobs = fetch_users_without_jobs(role='driver')
     
+    # Assuming you have a Job model defined
+    empty_jobs_without_driver = Job.query.filter(Job.driver_id.is_(None)).all()
+
     # Retrieve dispatcher information based on username and display the dashboard
-    jobs_by_company = {} 
     dispatcher = Dispatcher.query.filter_by(username=username).first()
     
+    # Make sure dispatcher is not None before accessing its attributes
+    if dispatcher:
+        dispatcher_user_id = dispatcher.user_id
+    else:
+        dispatcher_user_id = None
+
     return render_template(
         'dispatch/dispatch_dashboard.html',
         dispatcher=dispatcher,
         all_jobs=all_jobs,
-        jobs_by_company=jobs_by_company,
         drivers_without_jobs=drivers_without_jobs,
-        empty_jobs_without_driver=empty_jobs_without_driver
+        dispatcher_user_id=dispatcher_user_id,
+        empty_jobs_without_driver=empty_jobs_without_driver  # Assign the variable here
     )
+
+
 
 
 
 
 # Route for client dashboard
 @app.route('/client_dashboard/<username>')
-#@login_required
 def client_dashboard(username):
     form = ClientDashboardForm()
     # Retrieve client information based on the currently logged-in user
     user_id = g.user.id
+
+    # Attempt to query the client information
+    try:
+        client = Client.query.filter_by(user_id=user_id).first()
+    except Exception as e:
+        # Print the error for debugging
+        print("Error querying client:", str(e))
+        client = None  # Set client to None if there was an error
+
     # Query the jobs that match the user's id as the client_id
     all_jobs = Job.query.filter_by(client_id=user_id).all()
-    return render_template('clients/client_dashboard.html', all_jobs=all_jobs)
+
+    return render_template('clients/client_dashboard.html', client=client, all_jobs=all_jobs)
+
 
 
 # Route for manager dashboard

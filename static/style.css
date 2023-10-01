@@ -1,4 +1,4 @@
-/* Mobile First Design */
+/* Mobile First Design
 @media (max-width:480px) {
 
     header {
@@ -156,21 +156,7 @@
         color: white;
     }
     
-    .navbar-nav {
-        display: none; /* Hide the nav items */
-        flex-direction: column;
-        align-items: center;
-        background-color: grey;
-    }
-
-    .content {
-        position: absolute;
-        left: 50%;
-        transform: translateX(-50%);
-        margin-top: 10px; 
-        text-decoration: none;
-    }
-}
+ 
 
 
 @media (min-width:992px) and (max-width:1199px) {
@@ -324,7 +310,7 @@
         text-decoration: none;
         list-style-type: none;
     }
-}
+} */
 
 /* Master Code */
 form {
