@@ -40,7 +40,7 @@ app.config['SQLALCHEMY_ECHO'] = DEBUG #False #DEBUG #True
 
 app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
 
-app.config['SECRET_KEY'] = 'SeKRuT'
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', "SeKRuT")
 # app.config['DEBUG'] = False
 
 
