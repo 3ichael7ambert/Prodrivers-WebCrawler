@@ -22,7 +22,6 @@ class User(db.Model):
     license_type = db.Column(db.String(50)) 
     company_name = db.Column(db.String(100))
     current_job_id = db.Column(db.Integer, db.ForeignKey('job.id'))
-    # jobs = relationship('Job', backref='user', lazy=True)
      
  
 
