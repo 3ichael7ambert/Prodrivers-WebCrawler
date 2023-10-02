@@ -24,6 +24,7 @@ Flask-Migrate==4.0.4
 Flask-Script==2.0.6
 Flask-SQLAlchemy==3.0.5
 Flask-WTF==1.1.1
+gunicorn==21.2.0
 idna==3.4
 importlib-metadata==6.8.0
 iniconfig==2.0.0
@@ -48,6 +49,7 @@ psycopg2==2.9.6
 psycopg2-binary==2.8.4
 ptyprocess==0.6.0
 pure-eval==0.2.2
+pycparser==2.19
 Pygments==2.2.0
 pytest==7.3.1
 python-dateutil==2.7.3
