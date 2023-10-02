@@ -35,13 +35,13 @@ app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = (
     os.environ.get('DATABASE_URL', 'postgresql:///driver_jobs_db'))
 
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['SQLALCHEMY_ECHO'] = False #DEBUG #True
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True #False
+app.config['SQLALCHEMY_ECHO'] = DEBUG #False #DEBUG #True
 
 app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
 
 app.config['SECRET_KEY'] = 'SeKRuT'
-app.config['DEBUG'] = False
+# app.config['DEBUG'] = False
 
 
 migrate = Migrate(app, db)
