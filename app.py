@@ -41,14 +41,15 @@ app.config['SQLALCHEMY_ECHO'] = DEBUG #False #DEBUG #True
 app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
 
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', "SeKRuT")
-# app.config['DEBUG'] = False
+app.config['DEBUG'] = False
+
 
 
 migrate = Migrate(app, db)
 
 toolbar = DebugToolbarExtension(app)
 
-csrf = CSRFProtect(app)
+# csrf = CSRFProtect(app)
 app.app_context().push()
 connect_db(app)
 db.create_all() 
