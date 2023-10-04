@@ -1,48 +1,5 @@
-/* Mobile First Design
-@media (max-width:480px) {
 
-    header {
-        width: 100%;
-        text-align: center;
-        margin-bottom: 10px;
-        background-color: red;
-    }
     
-    nav {
-        display: inline;
-        width: 100%;
-        text-align: center;
-        background-color: black;
-    }
-    
-    .navbar-toggler {
-        display: block;
-        background-color: transparent;
-        border: none;
-    }
-    
-    .collapse-button {
-        display: block;
-        text-align: center;
-        margin-top: 10px;
-        color: white;
-    }
-    
-
-    .navbar-nav {
-        display: none; 
-        flex-direction: column;
-        align-items: center;
-        background-color: grey;
-    }
-
-    .navbar-nav a {
-        text-decoration: none; 
-        color: white;
-        padding: 10px 20px;
-        display: block; 
-        margin: 5px 0; 
-    }
 
     .content {
         position: absolute;
@@ -51,266 +8,6 @@
         margin-top: 10px; 
         text-decoration: none;
     }
-    
-    
-}  
-@media (min-width:481px) and (max-width:767px) {
-  
-    header {
-        width: 70%;
-        float: left;
-        padding: 10px;
-        text-align: center;
-        margin-bottom: 10px;
-        background-color: red;
-    }
-    
-    nav {
-        display: inline;
-        text-decoration: none;
-        width: 100%;
-        text-align: center;
-        background-color: black;
-    }
-    
-    .navbar-toggler {
-        display: block;
-        background-color: transparent;
-        border: none;
-    }
-    
-    .collapse-button {
-        display: block;
-        text-align: center;
-        margin-top: 10px;
-        color: white;
-    }
-    
-    .navbar-nav {
-        display: none; 
-        flex-direction: column;
-        align-items: center;
-        background-color: grey;
-    }
-
-    .navbar-nav a {
-        text-decoration: none; 
-        color: white;
-        padding: 10px 20px; 
-        display: block; 
-        margin: 5px 0;
-    }
-
-    .content {
-        position: absolute;
-        left: 50%;
-        transform: translateX(-50%);
-        margin-top: 10px; 
-        text-decoration: none;
-    }
-    
-}
-
-
-@media (min-width:768px) and (max-width:991px) {
-    
-    header {
-        width: 100%;
-        text-align: center;
-        margin-bottom: 10px;
-        background-color: red;
-    }
-    
-    nav {
-        display: inline;
-        text-decoration: none;
-        width: 100%;
-        text-align: center;
-        background-color: black;
-    }
-    .navbar-nav {
-        display: block;
-        flex-direction: column;
-        align-items: center;
-        background-color: grey;
-    }
-
-    .navbar-nav a {
-        text-decoration: none; 
-        color: white;
-        padding: 10px 20px; 
-        display: block; 
-        margin: 5px 0; 
-    }
-    .navbar-toggler {
-        display: block;
-        background-color: transparent;
-        border: none;
-        
-    }
-    
-    .collapse-button {
-        display: block;
-        text-align: center;
-        margin-top: 10px;
-        color: white;
-    }
-    
- 
-
-
-@media (min-width:992px) and (max-width:1199px) {
-  
-    header {
-        width: 100%;
-        text-align: center;
-        margin-bottom: 10px;
-        margin-bottom: 10px;
-        background-color: red;
-    }
-    
-    nav {
-        display: inline;
-        text-decoration: none;
-        width: 100%;
-        text-align: center;
-        background-color: black;
-    }
-    .navbar-nav {
-        display: block;
-        flex-direction: column;
-        align-items: center;
-        background-color: grey;
-    }
-
-    .navbar-nav a {
-        text-decoration: none; 
-        color: white;
-        padding: 10px 20px; 
-        display: block; 
-        margin: 5px 0; 
-    }
-    .navbar-toggler {
-        display: block;
-        background-color: transparent;
-        display: none; /* Hide the button on desktops */
-    }
-    
-    .collapse-button {
-        text-align: center;
-        margin-top: 10px;
-        color: white;
-        display: none; /* Hide the button on desktops */
-    }
-    
-    .navbar-nav {
-        display: flex; /* Display nav items inline on desktops */
-        justify-content: center;
-        background-color: grey;
-    }
-
-    .content {
-        position: absolute;
-        left: 50%;
-        transform: translateX(-50%);
-        margin-top: 10px; 
-        text-decoration: none;
-    }
-}
-
-@media (min-width:1200px) and (max-width:1919px) {
-    header {
-        width: 40%;
-        float: left;
-        padding: 30px;
-        text-align: center;
-        margin-bottom: 10px;
-        background-color: red;
-    }
-    
-    nav {
-        display: inline;
-        text-decoration: none;
-        width: 60%;
-        float: left;
-        padding: 10px;
-        background-color: black;
-    }
-    .navbar-nav {
-        display:block;
-        flex-direction: column;
-        align-items: center;
-        background-color: grey;
-    }
-
-    .navbar-nav a {
-        text-decoration: none; 
-        color: white;
-        padding: 10px 20px; 
-        display: block; 
-        margin: 5px 0; 
-    }
-    .navbar-toggler {
-        display: none;
-    }
-
-    .content {
-        position: absolute;
-        left: 50%;
-        transform: translateX(-50%);
-        margin-top: 10px; 
-        text-decoration: none;
-    }
-}
-
-
-@media (min-width:1920px) {
-    header {
-        width: 30%;
-        float: left;
-        padding: 40px;
-        text-align: center;
-        margin-bottom: 10px;
-        background-color: red;
-    }
-    
-    nav {
-        width: 70%;
-        float: top right;
-        padding: 40px;
-        background-color: black;
-    }
-    
-    .navbar-nav {
-        display: none; 
-        flex-direction: column;
-        align-items: center;
-        background-color: grey;
-    }
-
-    .navbar-nav a {
-        text-decoration: none; 
-        color: white;
-        padding: 10px 20px; 
-        display: block; 
-        margin: 5px 0; 
-    }
-
-    .navbar-toggler {
-        display: block;
-        background-color: transparent;
-        display: none;
-    }
-    
-    .content {
-        position: absolute;
-        left: 50%;
-        transform: translateX(-50%);
-        margin-top: 10px; 
-        text-decoration: none;
-        list-style-type: none;
-    }
-} */
 
 /* Master Code */
 form {
@@ -326,6 +23,19 @@ label {
     margin-bottom: 5px;
     font-weight: bold;
 }
+
+a
+{
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+a:hover {
+    background-color: #0056b3;
+}
 button {
     padding: 10px 20px;
     background-color: #007bff;
@@ -336,6 +46,19 @@ button {
 }
 
 button:hover {
+    background-color: #0056b3;
+}
+
+.btn {
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.btn:hover {
     background-color: #0056b3;
 }
 
@@ -433,3 +156,5 @@ ul, ol {
     padding: 0;
     margin: 0;
 }
+
+
