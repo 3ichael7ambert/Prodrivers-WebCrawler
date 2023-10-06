@@ -479,27 +479,32 @@ def dispatch_dashboard(username):
 @app.route('/client_dashboard/<username>')
 def client_dashboard(username):
     form = ClientDashboardForm()
-    # Retrieve client information based on the currently logged-in user
-    user_id = g.user.id
+    # Check if the user is authenticated and has the appropriate role
+    if g.user and g.user.role == 'client':
+        # Retrieve client information based on the currently logged-in user
+        user_id = g.user.id
 
-    # Attempt to query the client information
-    try:
-        client = Client.query.filter_by(user_id=user_id).first()
-    except Exception as e:
-        # Print the error for debugging
-        print("Error querying client:", str(e))
-        client = None  # Set client to None if there was an error
+        # Attempt to query the client information
+        client = User.query.filter_by(id=user_id).first()
 
-    # Query the jobs that match the user's id as the client_id
-    all_jobs = Job.query.filter_by(client_id=user_id).all()
 
-    return render_template('clients/client_dashboard.html', client=client, all_jobs=all_jobs)
+        # Query the jobs that match the user's id as the client_id
+        all_jobs = Job.query.filter_by(client_id=user_id).all()
 
+        return render_template('clients/client_dashboard.html', client=client, all_jobs=all_jobs)
+    else:
+        if g.user.role == 'driver':
+            return redirect(url_for('driver_dashboard', username=g.user.username))
+        elif g.user.role == 'client':
+            return redirect(url_for('client_dashboard', username=g.user.username))
+        elif g.user.role == 'dispatcher':
+            return redirect(url_for('dispatch_dashboard', username=g.user.username))
+        else:
+            return redirect(url_for('home')) 
 
 
 # Route for manager dashboard
 @app.route('/manager_dashboard/<username>')
-#@login_required
 def manager_dashboard(username):
     form = LoginForm()
     # Retrieve client information based on username and display the dashboard
