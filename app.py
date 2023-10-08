@@ -631,11 +631,23 @@ def remove_job(job_id):
     # 
     return redirect(url_for('driver_dashboard'))
 
-@app.route('/delete_job/<int:job_id>')
+@app.route('/delete_job/<int:job_id>', methods=['POST'])
 def delete_job(job_id):
-    # Logic to delete a job (this should cascade and remove from drivers too)
-    # 
-    return redirect(url_for('client_dashboard'))
+    # Logic to delete a job
+    job = Job.query.get(job_id)
+    if job:
+        # Get the user associated with this job
+        user = User.query.get(job.client_id)
+        
+        # Update the user's current_job_id to None
+        user.current_job_id = None
+
+        # Remove the job from the database
+        db.session.delete(job)
+        db.session.commit()
+
+    # Redirect to the client dashboard with the username parameter
+    return redirect(url_for('client_dashboard', username=user.username))
 
 ##################################################################################################################################################################################
 #NAV
@@ -665,21 +677,27 @@ def edit_driver(user_id):
     form = YourDriverEditForm()
 
     if form.validate_on_submit():
-        # Handle form submission (e.g., update the database)
 
 
         return render_template('drivers/edit_driver.html', form=form, user_id=user_id)
 
 @app.route('/edit_client/<int:user_id>', methods=['GET', 'POST'])
 def edit_client(user_id):
-    # Fetch the client's data and create a form
-    form = YourClientEditForm()
-
+    user = User.query.get(user_id)
+    form = YourClientEditForm()  # Create an instance of the form
+    
     if form.validate_on_submit():
-        # Handle form submission (e.g., update the database)
-
-
-        return render_template('clients/edit_client.html', form=form, user_id=user_id)
+        # Process the form data and update the user's information
+        user.first_name = form.first_name.data
+        user.last_name = form.last_name.data
+        user.email = form.email.data
+        
+        db.session.commit()
+        flash('Client information updated successfully', 'success')
+        return redirect(url_for('client_dashboard', username=user.username))
+    
+    # Render the template with the form
+    return render_template('edit_client.html', user=user, form=form)
 
 @app.route('/edit_dispatcher/<int:user_id>', methods=['GET', 'POST'])
 def edit_dispatcher(user_id):
@@ -688,7 +706,6 @@ def edit_dispatcher(user_id):
     form = YourDispatcherEditForm()
 
     if form.validate_on_submit():
-        # Handle form submission (e.g., update the database)
 
 
         return render_template('dispatch/edit_dispatch.html', form=form, user_id=user_id)

@@ -20,7 +20,9 @@
                     <p><strong>Job Title:</strong> {{ job.job_title }}</p>
                     <p><strong>State:</strong> {{ job.job_state }}</p>
                     <p><strong>Pay:</strong> {{ job.job_payrate }}</p>
-                    <!-- Display other relevant information about the job -->
+                    <form method="post" action="{{ url_for('delete_job', job_id=job.id) }}">
+                    <button type="submit" class="btn btn-danger">Remove Job</button>
+                    </form>
                     <form method="post">
                     </form>
                 </li>
