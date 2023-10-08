@@ -5,36 +5,91 @@
 {% block content %}
 
 {% if dispatcher %}
-    <a href="{{ url_for('edit_dispatcher', user_id=dispatcher.user_id) }}" class="btn btn-primary">Edit Profile</a>
+<a href="{{ url_for('edit_dispatcher', user_id=dispatcher.id) }}" class="btn btn-primary">Edit Profile</a>
 {% endif %}
 
-
-    <!-- Add buttons to trigger section visibility -->
     <button id="allJobsBtn">Show All Jobs</button>
     <button id="jobsByCompanyBtn">Show Jobs by Company</button>
     <button id="driversWithoutJobsBtn">Show Drivers Without Jobs</button>
     <button id="emptyJobsWithoutDriverBtn">Show Empty Jobs Without Driver</button>
 
-    <!-- Add sections with dynamic IDs -->
+
     <div id="allJobsSection" class="dashboard-section">
-        <!-- Content for All Jobs section -->
-        ...
+        <h2>All Jobs</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Job Title</th>
+                    <th>Client</th>
+                    <th>Driver</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for job, client_name, driver_name in all_jobs %}
+                    <tr>
+                        <td>{{ job.job_title }}</td>
+                        <td>{{ client_name }}</td>
+                        <td>{{ driver_name if driver_name else "Not Assigned" }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+            
+            
+        </table>
     </div>
+    
     
     <div id="jobsByCompanySection" class="dashboard-section">
-        <!-- Content for Jobs by Company section -->
-        ...
+        <h2>Jobs by Company</h2>
+        {% for client_id, client_jobs in jobs_by_client.items() %}
+            <h3>{{ client_jobs[0][0].client_id }}</h3>
+            <ul>
+                {% for job, client_name, driver_name in client_jobs %}
+                    <li>{{ job.job_title }} - Driver: {{ driver_name if driver_name else "Not Assigned" }}</li>
+                {% endfor %}
+            </ul>
+        {% endfor %}
     </div>
+    
+    
+    
     
     <div id="driversWithoutJobsSection" class="dashboard-section">
-        <!-- Content for Drivers Without Jobs section -->
-        ...
+        <h2>Drivers Without Jobs</h2>
+        <ul>
+            {% for driver in drivers_without_jobs %}
+                <li>{{ driver.username }}</li>
+            {% endfor %}
+        </ul>
     </div>
     
+    
     <div id="emptyJobsWithoutDriverSection" class="dashboard-section">
-        <!-- Content for Empty Jobs Without Driver section -->
-        ...
+        <h2>Empty Jobs Without Driver</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Job Title</th>
+                    <th>Client</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for job in empty_jobs_without_driver %}
+                    <tr>
+                        <td>{{ job.job_title }}</td>
+                        <td>
+                            {% if job.client_id %}
+                                Client: {{ job.client_id }}
+                            {% else %}
+                                Not Assigned
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
+    
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>

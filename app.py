@@ -24,7 +24,7 @@ from flask_migrate import Migrate
 import logging
 
 from sqlalchemy.exc import IntegrityError
-from sqlalchemy.orm import joinedload
+from sqlalchemy.orm import joinedload, aliased
 
 CURR_USER_KEY = "curr_user"
 
@@ -442,33 +442,54 @@ def driver_dashboard(username):
 
 # Route for dispatcher dashboard
 @app.route('/dispatch_dashboard/<username>')
-#@login_required
 def dispatch_dashboard(username):
     form = DispatchDashboardForm()
     
-    all_jobs = Job.query.all()
-    drivers_without_jobs = fetch_users_without_jobs(role='driver')
-    
-    # Assuming you have a Job model defined
-    empty_jobs_without_driver = Job.query.filter(Job.driver_id.is_(None)).all()
+    # Retrieve dispatcher information based on username and role
+    dispatcher = User.query.filter_by(username=username, role='dispatcher').first()
 
-    # Retrieve dispatcher information based on username and display the dashboard
-    dispatcher = Dispatcher.query.filter_by(username=username).first()
-    
-    # Make sure dispatcher is not None before accessing its attributes
     if dispatcher:
-        dispatcher_user_id = dispatcher.user_id
-    else:
-        dispatcher_user_id = None
-
-    return render_template(
-        'dispatch/dispatch_dashboard.html',
-        dispatcher=dispatcher,
-        all_jobs=all_jobs,
-        drivers_without_jobs=drivers_without_jobs,
-        dispatcher_user_id=dispatcher_user_id,
-        empty_jobs_without_driver=empty_jobs_without_driver  # Assign the variable here
-    )
+        dispatcher_user_id = dispatcher.id
+        
+        # Create aliases for the User table for client and driver joins
+        ClientUser = aliased(User)
+        DriverUser = aliased(User)
+        
+        # Fetch all jobs from the Job table and join with the User table to get client and driver information
+        all_jobs = db.session.query(
+            Job,
+            ClientUser.username.label('client_name'),
+            DriverUser.username.label('driver_name')
+        ) \
+        .outerjoin(ClientUser, ClientUser.id == Job.client_id) \
+        .outerjoin(DriverUser, DriverUser.id == Job.driver_id) \
+        .all()
+        
+        # Organize jobs by the client_id column from the Job table
+        jobs_by_client = {}
+        for job, client_name, driver_name in all_jobs:
+            if job.client_id not in jobs_by_client:
+                jobs_by_client[job.client_id] = []
+            jobs_by_client[job.client_id].append((job, client_name, driver_name))
+        
+        # List every driver that has an empty current_job_id value from the User table
+        drivers_without_jobs = User.query.filter(User.role == 'driver', User.current_job_id.is_(None)).all()
+        
+        # List every job that has an empty value in the driver_id column of the Job table
+        empty_jobs_without_driver = Job.query.filter(Job.driver_id.is_(None)).all()
+        
+        return render_template(
+            'dispatch/dispatch_dashboard.html',
+            dispatcher=dispatcher,
+            all_jobs=all_jobs,
+            jobs_by_client=jobs_by_client,
+            drivers_without_jobs=drivers_without_jobs,
+            dispatcher_user_id=dispatcher_user_id,
+            empty_jobs_without_driver=empty_jobs_without_driver
+        )
+    
+    flash('Dispatcher not found', 'danger')
+    return redirect(url_for('main'))
 
 
 
