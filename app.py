@@ -16,6 +16,9 @@ from models import db, connect_db, User, Job ,Driver, Client, Dispatcher, Compan
 from forms import LoginForm, RegisterForm, JobSearchForm, JobPostForm, JobEditForm, UserProfileForm, DriverDashboardForm, ClientDashboardForm, DispatchDashboardForm
 
 from webcrawl import scrape_job_data
+from webcrawl_prodrivers import scrape_job_data_prodrivers
+from webcrawl_cpc import scrape_job_data_cpc
+from webcrawl_trillium import scrape_job_data_trillium
 
 from werkzeug.utils import secure_filename
 
@@ -71,9 +74,15 @@ key_param = ''
 city_param = random_city
 state_param = random_state
 url = f"https://www.prodrivers.com/jobs/?_city={city_param}&_state={state_param}&_title={key_param}"
+url_prodrivers = f"https://www.prodrivers.com/jobs/?_city={city_param}&_state={state_param}&_title={key_param}"
+url_cpc = f"https://cpclogistics.com/jobs/us/?search_location={city_param}"
+url_trillium = f"https://www.prodrivers.com/jobs/?_city={city_param}&_state={state_param}&_title={key_param}"
 
-job_data = scrape_job_data(f"https://www.prodrivers.com/jobs/?_city={city_param}&_state={state_param}&_title={key_param}") 
 
+job_data = scrape_job_data(f"https://www.prodrivers.com/jobs/?_city={city_param}&_state={state_param}&_title={key_param}")
+job_data_prodrivers = scrape_job_data_prodrivers(f"https://www.prodrivers.com/jobs/?_city={city_param}&_state={state_param}&_title={key_param}")
+job_data_cpc = scrape_job_data_cpc(f"https://cpclogistics.com/jobs/us/?search_location={city_param}")
+job_data_trillium = scrape_job_data_trillium(f"https://www.prodrivers.com/jobs/?_city={city_param}&_state={state_param}&_title={key_param}")
 
 ###############################################
 
@@ -286,6 +295,9 @@ def get_random_job_data():
         state_param = state_abbreviation
         key_param = ''
         url = f"https://www.prodrivers.com/jobs/?_city=&_state={state_param}"
+        # url_trillium = f"https://trilliumstaffing.com/jobs/search/?keywords=cdl&location={city_param}"
+        # url_cpc = f"https://cpclogistics.com/jobs/us/?search_location={city}"
+        # url_prodrivers = f"https://www.prodrivers.com/jobs/?_city=&_state={state_param}"
 
         # Fetch random job data
         job_data = scrape_job_data(url)
@@ -316,6 +328,9 @@ def main():
         state_param = state_abbreviation
         key_param = ''
         url = f"https://www.prodrivers.com/jobs/?_city=&_state={state_param}"
+        # url_trillium = f"https://trilliumstaffing.com/jobs/search/?keywords=cdl&location={city_param}"
+        # url_cpc = f"https://cpclogistics.com/jobs/us/?search_location={city}"
+        # url_prodrivers = f"https://www.prodrivers.com/jobs/?_city=&_state={state_param}"
 
         # Fetch random job data
         job_data = scrape_job_data(url)
@@ -349,11 +364,61 @@ def profile(user_id):
         else:
             return redirect(url_for('home')) 
 
+# @app.route('/job_board', methods=['GET', 'POST'])
+# def job_board():
+#     job_search_form = JobSearchForm()
+
+#     web_job_data = None  # Initialize web_job_data as None
+#     db_job_data = None   # Initialize db_job_data as None
+#     matched_jobs = []    # Initialize matched_jobs as an empty list
+
+#     # Define default values for the search parameters
+#     city = None
+#     state = None
+#     keyword = None
+
+#     if request.method == 'POST':
+#         city = request.form.get('city')
+#         state = request.form.get('state')
+#         keyword = request.form.get('keyword')
+
+#         # Scrape job data from the website
+#         url = f"https://www.prodrivers.com/jobs/?_city=&_state={state_param}"
+#         url_trillium = f"https://trilliumstaffing.com/jobs/search/?keywords=cdl&location={city_param}"
+#         url_cpc = f"https://cpclogistics.com/jobs/us/?search_location={city}"
+#         url_pd = f"https://www.prodrivers.com/jobs/?_city=&_state={state_param}"
+#         web_job_data = scrape_job_data(url)
+#         web_job_data = scrape_job_data_prodrivers(url_pd)
+#         web_job_data = scrape_job_data_cpc(url_cpc)
+#         web_job_data = scrape_job_data_trillium(url_trillium)
+
+#         # Query your local database for job data
+#         db_job_data = Job.query.all()  # Adjust the query as needed
+
+#         # Filter jobs based on search criteria
+#         for job in db_job_data:
+#             city_match = not city or job.job_city == city
+#             state_match = not state or job.job_state == state
+#             keyword_match = not keyword or (keyword in job.job_title)
+
+#             if city_match or state_match or keyword_match:
+#                 matched_jobs.append(job)  # Add the job to the matched_jobs list
+
+#     return render_template(
+#         'job_board.html',
+#         job_search_form=job_search_form,
+#         web_job_data=web_job_data,
+#         db_job_data=matched_jobs,  # Pass the filtered list
+#         city_param=city,
+#         state_param=state,
+#         keyword=keyword
+#     )
+
 @app.route('/job_board', methods=['GET', 'POST'])
 def job_board():
     job_search_form = JobSearchForm()
 
-    web_job_data = None  # Initialize web_job_data as None
+    web_job_data = []  # Initialize web_job_data as an empty list
     db_job_data = None   # Initialize db_job_data as None
     matched_jobs = []    # Initialize matched_jobs as an empty list
 
@@ -367,12 +432,23 @@ def job_board():
         state = request.form.get('state')
         keyword = request.form.get('keyword')
 
-        # Scrape job data from the website
-        url = f"https://www.prodrivers.com/jobs/?_city={city}&_state={state}&_title={keyword}"
-        web_job_data = scrape_job_data(url)
+        # Scrape job data from the websites
+        urls = [
+            f"https://www.prodrivers.com/jobs/?_city=&_state={state}",
+            f"https://trilliumstaffing.com/jobs/search/?keywords=cdl&location={city}",
+            f"https://cpclogistics.com/jobs/us/?search_location={city}"
+        ]
+
+        for url in urls:
+            if "prodrivers.com" in url:
+                web_job_data.extend(scrape_job_data(url))
+            elif "trilliumstaffing.com" in url:
+                web_job_data.extend(scrape_job_data_trillium(url))
+            elif "cpclogistics.com" in url:
+                web_job_data.extend(scrape_job_data_cpc(url)) 
 
         # Query your local database for job data
-        db_job_data = Job.query.all()  # Adjust the query as needed
+        db_job_data = Job.query.all() 
 
         # Filter jobs based on search criteria
         for job in db_job_data:
@@ -381,13 +457,13 @@ def job_board():
             keyword_match = not keyword or (keyword in job.job_title)
 
             if city_match or state_match or keyword_match:
-                matched_jobs.append(job)  # Add the job to the matched_jobs list
+                matched_jobs.append(job) 
 
     return render_template(
         'job_board.html',
         job_search_form=job_search_form,
         web_job_data=web_job_data,
-        db_job_data=matched_jobs,  # Pass the filtered list
+        db_job_data=matched_jobs, 
         city_param=city,
         state_param=state,
         keyword=keyword

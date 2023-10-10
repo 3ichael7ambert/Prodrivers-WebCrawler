@@ -13,7 +13,7 @@ def extract_city_and_state(location_str):
         state = ""
     return city, state
 
-def scrape_job_data(url):
+def scrape_job_data_prodrivers(url):
     headers = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3'
     }
@@ -55,7 +55,7 @@ if __name__ == "__main__":
     keyword = "YourKeyword"
     
     url = f"https://www.prodrivers.com/jobs/?_city={city}&_state={state}&_state={keyword}"
-    job_data = scrape_job_data(url)
+    job_data = scrape_job_data_prodrivers(url)
 
     if job_data:
         json_output = json.dumps(job_data, indent=2)
