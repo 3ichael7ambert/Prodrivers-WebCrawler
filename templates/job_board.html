@@ -53,7 +53,7 @@
                 </ul>
                 <!-- Add a link for web job details here -->
                 {% if g.user.role == "driver" %}
-                    <a href="{{ url_for('accept_job', username=g.user.username, job_id=loop.index) }}">Accept Job</a>
+                    <a href="{{ url_for('accept_job', username=g.user.username, job_id=loop.index) }}" >Accept Job</a>
                 {% endif %}
             </li>
         {% endfor %}

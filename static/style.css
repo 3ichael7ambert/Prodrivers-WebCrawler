@@ -10,6 +10,11 @@
     }
 
 /* Master Code */
+
+.header-img {
+    display: inline;
+}
+
 form {
     margin: 20px auto;
     max-width: 400px;
@@ -60,6 +65,19 @@ button:hover {
 
 .btn:hover {
     background-color: #0056b3;
+}
+
+.btn-danger {
+    padding: 10px 20px;
+    background-color: #d9534f;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.btn-danger:hover {
+    background-color: #c9302c;
 }
 
 input {
