@@ -52,10 +52,13 @@ migrate = Migrate(app, db)
 
 toolbar = DebugToolbarExtension(app)
 
-# csrf = CSRFProtect(app)
-app.app_context().push()
-connect_db(app)
-db.create_all() 
+# # csrf = CSRFProtect(app)
+# app.app_context().push()
+# connect_db(app)
+# db.create_all() 
+with app.app_context():
+    connect_db(app)
+    db.create_all()
 
 # Set up logging
 logging.basicConfig(level=logging.DEBUG)
