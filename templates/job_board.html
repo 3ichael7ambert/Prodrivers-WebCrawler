@@ -4,87 +4,149 @@
 
 {% block content %}
     <h1>Job Board</h1>
-<!-- Job Search Form -->
-<form action="{{ url_for('job_board') }}" method="post">
-    {{ job_search_form.csrf_token }}
     
-    <div class="form-group">
-        {{ job_search_form.city.label(class="form-control-label") }}
-        {{ job_search_form.city(class="form-control") }}
-    </div>
-
-    <div class="form-group">
-        {{ job_search_form.state.label(class="form-control-label") }}
-        {{ job_search_form.state(class="form-control") }}
-    </div>
-    
-    <div class="form-group">
-        {{ job_search_form.keyword.label(class="form-control-label") }}
-        {{ job_search_form.keyword(class="form-control") }}
-    </div>
-
-    <button type="submit" class="btn btn-primary">Search</button>
-</form>
-
-
-    {% if get_flashed_messages() %}
-        <div class="flash-messages">
-            {% for message in get_flashed_messages() %}
-                <div class="flash-message">{{ message }}</div>
-            {% endfor %}
+    <!-- Job Search Form -->
+    <form action="{{ url_for('job_board') }}" method="post">
+        {{ job_search_form.csrf_token }}
+        
+        <div class="form-group">
+            {{ job_search_form.city.label(class="form-control-label") }}
+            {{ job_search_form.city(class="form-control") }}
         </div>
-    {% endif %}
+
+        <div class="form-group">
+            {{ job_search_form.state.label(class="form-control-label") }}
+            {{ job_search_form.state(class="form-control") }}
+        </div>
+        
+        <div class="form-group">
+            {{ job_search_form.keyword.label(class="form-control-label") }}
+            {{ job_search_form.keyword(class="form-control") }}
+        </div>
+
+        <button type="submit" class="btn btn-primary">Search</button>
+    </form>
+
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <div class="flash-messages">
+                {% for message in messages %}
+                    <div class="flash-message">{{ message }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+
+
+
 
     {% if web_job_data %}
     <h2>Web Job Data</h2>
     <ul>
         {% for job in web_job_data %}
             <li>
-                <h3>{{ job['Title'] }}</h3>
-                <p><strong>Location:</strong> {{ job['Location'] }}</p>
-                <p><strong>City:</strong> {{ job.City }}</p>
-                <p><strong>State:</strong> {{ job.State }}</p>
-                <p><strong>Base Pay:</strong> {{ job['Base Pay'] }}</p>
+                <h3>
+                    {% if job is mapping %}
+                        {{ job.get('Title', 'DefaultTitle') }}
+                    {% else %}
+                        {{ job }}  {# Display the string content directly #}
+                    {% endif %}
+                </h3>
+                <p><strong>Location:</strong>
+                    {% if job is mapping %}
+                        {{ job.get('Location', 'Location not specified') }}
+                    {% else %}
+                        {{ job }}  {# Display the string content directly #}
+                    {% endif %}
+                </p>
+                <p><strong>City:</strong>
+                    {% if job is mapping %}
+                        {{ job.get('City', 'City not specified') }}
+                    {% else %}
+                        {{ job }}  {# Display the string content directly #}
+                    {% endif %}
+                </p>
+    
+                <p><strong>City:</strong> 
+                    {% if job is mapping %}
+                        {{ job.get('City', 'City not specified') }}
+                    {% else %}
+                        {{ job }}  {# Display the string content directly #}
+                    {% endif %}
+                </p>
+                <p><strong>State:</strong> 
+                    {% if job is mapping %}
+                        {{ job.get('State', 'State not specified') }}
+                    {% else %}
+                        {{ job }}  {# Display the string content directly #}
+                    {% endif %}
+                </p>
+                <p><strong>Base Pay:</strong> 
+                    {% if job is mapping %}
+                        {{ job.get('Base Pay', 'Base Pay not specified') }}
+                    {% else %}
+                        {{ job }}  {# Display the string content directly #}
+                    {% endif %}
+                </p>
                 <p><strong>Duties:</strong></p>
                 <ul>
-                    {% for duty in job['Duties'] %}
-                        <li>{{ duty }}</li>
-                    {% endfor %}
+                    {% if job is mapping and 'Duties' in job %}
+                        {% for duty in job['Duties'] %}
+                            <li>{{ duty }}</li>
+                        {% endfor %}
+                    {% endif %}
                 </ul>
                 <!-- Add a link for web job details here -->
                 {% if g.user.role == "driver" %}
-                    <a href="{{ url_for('accept_job', username=g.user.username, job_id=loop.index) }}" >Accept Job</a>
+                    <!-- <a href="{{ url_for('accept_job', username=g.user.username, job_id=loop.index) }}">Accept Job</a> -->
+            
+                <!-- Form for accepting the job -->
+                
+                <!-- Form for accepting the job -->
+                <form method="post" action="{{ url_for('accept_job', username=g.user.username) }}">
+                    <input type="hidden" name="job_id" value="{% if job is mapping %}{{ job.get('ID', 'DefaultID') }}{% else %}{{ 'DefaultID' }}{% endif %}">
+                    <input type="hidden" name="job_title" value="{% if job is mapping %}{{ job.get('Title', 'DefaultTitle') }}{% else %}{{ 'DefaultTitle' }}{% endif %}">
+                    <input type="hidden" name="job_description" value="{% if job is mapping %}{{ job.get('Description', 'No description available') }}{% else %}{{ 'No description available' }}{% endif %}">
+                    <input type="hidden" name="job_state" value="{% if job is mapping %}{{ job.get('State', 'State not specified') }}{% else %}{{ 'State not specified' }}{% endif %}">
+                    <input type="hidden" name="job_city" value="{% if job is mapping %}{{ job.get('City', 'City not specified') }}{% else %}{{ 'City not specified' }}{% endif %}">
+                    <!-- Add other hidden fields for job data -->
+                    <button type="submit" class="btn btn-primary">Accept Job</button>
+                </form>
                 {% endif %}
+                
             </li>
         {% endfor %}
     </ul>
-{% else %}
+    {% else %}
     <p>No web job data available.</p>
-{% endif %}
+    {% endif %}
 
-{% if matched_jobs %}
-    <h2>Database Job Data</h2>
-    <ul>
-        {% for job in matched_jobs %}
-            <li>
-                <h3>{{ job.job_title }}</h3>
-                <p><strong>Location:</strong> {{ job.job_city }}, {{ job.job_state }}</p>
-                <p><strong>Base Pay:</strong> {{ job.job_payrate }}</p>
-                <p><strong>Duties:</strong></p>
-                <ul>
-                    {% for duty in job.job_duties.split(',') %}
-                        <li>{{ duty }}</li>
-                    {% endfor %}
-                </ul>
-                <!-- Add a link for database job details here -->
-                {% if g.user.role == "driver" %}
-                    <a href="{{ url_for('accept_job', username=g.user.username, job_id=job.job_id) }}">Accept Job</a>
-                {% endif %}
-            </li>
-        {% endfor %}
-    </ul>
-{% else %}
-    <p>No matching job data available.</p>
-{% endif %}
+    
 
+
+    {% if matched_jobs %}
+        <h2>Database Job Data</h2>
+        <ul>
+            {% for job in matched_jobs %}
+                <li>
+                    <h3>{{ job.job_title }}</h3>
+                    <p><strong>Location:</strong> {{ job.job_city }}, {{ job.job_state }}</p>
+                    <p><strong>Base Pay:</strong> {{ job.job_payrate }}</p>
+                    <p><strong>Duties:</strong></p>
+                    <ul>
+                        {% for duty in job.job_duties.split(',') %}
+                            <li>{{ duty }}</li>
+                        {% endfor %}
+                    </ul>
+                    
+                    {% if g.user.role == "driver" %}
+                        <a href="{{ url_for('accept_job', username=g.user.username, job_id=job.job_id) }}">Accept Job</a>
+                    {% endif %}
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No matching job data available.</p>
+    {% endif %}
 {% endblock %}

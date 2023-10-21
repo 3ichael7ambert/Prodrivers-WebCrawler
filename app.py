@@ -13,7 +13,7 @@ from flask_bcrypt import Bcrypt, generate_password_hash, check_password_hash
 from flask_debugtoolbar import DebugToolbarExtension
 
 from models import db, connect_db, User, Job ,Driver, Client, Dispatcher, Company, HiddenJob
-from forms import LoginForm, RegisterForm, JobSearchForm, JobPostForm, JobEditForm, UserProfileForm, DriverDashboardForm, ClientDashboardForm, DispatchDashboardForm
+from forms import LoginForm, RegisterForm, JobSearchForm, JobPostForm, JobEditForm, UserProfileForm, DriverDashboardForm, ClientDashboardForm, DispatchDashboardForm, UserEditForm
 
 from webcrawl import scrape_job_data
 from webcrawl_prodrivers import scrape_job_data_prodrivers
@@ -367,55 +367,6 @@ def profile(user_id):
         else:
             return redirect(url_for('home')) 
 
-# @app.route('/job_board', methods=['GET', 'POST'])
-# def job_board():
-#     job_search_form = JobSearchForm()
-
-#     web_job_data = None  # Initialize web_job_data as None
-#     db_job_data = None   # Initialize db_job_data as None
-#     matched_jobs = []    # Initialize matched_jobs as an empty list
-
-#     # Define default values for the search parameters
-#     city = None
-#     state = None
-#     keyword = None
-
-#     if request.method == 'POST':
-#         city = request.form.get('city')
-#         state = request.form.get('state')
-#         keyword = request.form.get('keyword')
-
-#         # Scrape job data from the website
-#         url = f"https://www.prodrivers.com/jobs/?_city=&_state={state_param}"
-#         url_trillium = f"https://trilliumstaffing.com/jobs/search/?keywords=cdl&location={city_param}"
-#         url_cpc = f"https://cpclogistics.com/jobs/us/?search_location={city}"
-#         url_pd = f"https://www.prodrivers.com/jobs/?_city=&_state={state_param}"
-#         web_job_data = scrape_job_data(url)
-#         web_job_data = scrape_job_data_prodrivers(url_pd)
-#         web_job_data = scrape_job_data_cpc(url_cpc)
-#         web_job_data = scrape_job_data_trillium(url_trillium)
-
-#         # Query your local database for job data
-#         db_job_data = Job.query.all()  # Adjust the query as needed
-
-#         # Filter jobs based on search criteria
-#         for job in db_job_data:
-#             city_match = not city or job.job_city == city
-#             state_match = not state or job.job_state == state
-#             keyword_match = not keyword or (keyword in job.job_title)
-
-#             if city_match or state_match or keyword_match:
-#                 matched_jobs.append(job)  # Add the job to the matched_jobs list
-
-#     return render_template(
-#         'job_board.html',
-#         job_search_form=job_search_form,
-#         web_job_data=web_job_data,
-#         db_job_data=matched_jobs,  # Pass the filtered list
-#         city_param=city,
-#         state_param=state,
-#         keyword=keyword
-#     )
 
 @app.route('/job_board', methods=['GET', 'POST'])
 def job_board():
@@ -450,7 +401,7 @@ def job_board():
             elif "cpclogistics.com" in url:
                 web_job_data.extend(scrape_job_data_cpc(url)) 
 
-        # Query your local database for job data
+        # Query local database for job data
         db_job_data = Job.query.all() 
 
         # Filter jobs based on search criteria
@@ -492,7 +443,7 @@ def driver_dashboard(username):
         user = User.query.filter_by(username=username).first()
         job = Job.query.filter_by(driver_id=user.id).first()  # Use driver_id here
 
-        # Inside your driver_dashboard function
+        # Inside driver_dashboard function
         if request.method == 'POST' and form.validate_on_submit():
             if job:
                 # Remove the current g.user's ID from the driver_id column of the current job
@@ -676,44 +627,44 @@ def edit_job(job_id):
 
 
 
+@app.route('/accept_job/<username>', methods=['POST'])
+def accept_job(username):
+    user = User.query.filter_by(username=username).first()
 
-@app.route('/accept_job/<int:job_id>/<username>')
-def accept_job(job_id, username):
-    # Check if the current user is authenticated
-    if not g.user:
-        flash('You must be logged in to accept a job', 'danger')
-        return redirect(url_for('login'))  # Adjust the route to your login page
-
-    # Get the job based on the job_id
-    job = Job.query.get(job_id)
-
-    if not job:
-        flash('Job not found', 'danger')
+    if not user:
+        flash('User not found', 'danger')
         return redirect(url_for('driver_dashboard', username=username))
 
-    # Check if the job is already assigned
-    if job.driver_id:
-        flash('Job is already assigned', 'danger')
-        return redirect(url_for('driver_dashboard', username=username))
+    # Extract job data from the form
+    job_id = request.form['job_id']
+    job_title = request.form['job_title']
+    job_description = request.form['job_description']
+    job_state = request.form['job_state']
+    job_city = request.form['job_city']
 
-    # Update the job's driver_id with the current user's ID
-    job.driver_id = g.user.id
+    # Create a new Job instance with the extracted data
+    new_job = Job(
+        job_title=job_title,
+        job_description=job_description,
+        job_state=job_state,
+        job_city=job_city,
+    )
 
-    # Update the user's current_job_id
-    g.user.current_job_id = job_id
+    # Add the new job entry to the database
+    db.session.add(new_job)
+    db.session.commit()
 
-    # Add the modified job and user to the session and commit the changes to the database
-    db.session.add(job)
-    db.session.add(g.user)
+    # Assign the new job to the current user
+    new_job.driver_id = user.id
+    user.current_job_id = new_job.id
+
+    # Update the changes in the database
+    db.session.add(new_job)
+    db.session.add(user)
     db.session.commit()
 
     flash('Job accepted successfully', 'success')
     return redirect(url_for('driver_dashboard', username=username))
-
-
-
-
-
 
 
 
@@ -774,7 +725,7 @@ def contact():
 def edit_driver(user_id):
     # Fetch the driver's data and create a form
 
-    form = YourDriverEditForm()
+    form = UserEditForm()
 
     if form.validate_on_submit():
 
@@ -802,7 +753,6 @@ def edit_client(user_id):
 @app.route('/edit_dispatcher/<int:user_id>', methods=['GET', 'POST'])
 def edit_dispatcher(user_id):
     # Fetch the dispatcher's data and create a form
-    # Replace this with your actual code for fetching and creating the form
     form = YourDispatcherEditForm()
 
     if form.validate_on_submit():

@@ -56,13 +56,7 @@ class JobPostForm(FlaskForm):
         ('class_c', 'Class C'), 
         ('non_cdl', 'Non-CDL')
     ], validators=[DataRequired()])
-    # endorsements = MultiCheckboxField('Required Endorsements', choices=[
-    #     ('tanker', 'Tanker Endorsement'),
-    #     ('hazmat', 'Hazmat Endorsement'),
-    #     ('doubles_triples', 'Doubles/Triples Endorsement'),
-    #     ('passenger', 'Passenger Endorsement')
-    # ])
-    # job_schedule = StringField('Job Schedule', validators=[DataRequired()])
+
 
 class JobEditForm(FlaskForm):
     job_title = StringField('Job Title', validators=[DataRequired()])

@@ -9,9 +9,12 @@
     {% if job %}
         <p><strong>Job Title:</strong> {{ job.job_title }}</p>
         <p><strong>Location:</strong> {{ job.job_state }}, {{ job.job_city }}</p>
+        <p><strong>Job Description:</strong> {{ job.job_description }}</p>
+        <p><strong>Base Pay:</strong> {{ job.job_payrate }}</p>
+        <!-- Add more job details here -->
         <form method="post">
             {{ driver_dashboard_form.hidden_tag() }}
-            {{ driver_dashboard_form.update_profile }}
+            <!-- {{ driver_dashboard_form.update_profile }} -->
             {{ driver_dashboard_form.remove_job }}
         </form>
     {% else %}
